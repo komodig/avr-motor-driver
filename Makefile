@@ -27,9 +27,7 @@ DOXYGEN_DIR = $(shell grep OUTPUT_DIRECTORY Doxyfile | sed -e 's/^.*=\ *//g')
 OBJS = ${BUILD_DIR}/${fname}.o \
        ${BUILD_DIR}/gpio.o \
        ${BUILD_DIR}/usart.o \
-       ${BUILD_DIR}/pwm.o \
-       ${BUILD_DIR}/timer.o \
-       ${BUILD_DIR}/led_patterns.o
+       ${BUILD_DIR}/pwm.o
 #       ${BUILD_DIR}/usart.o
 #
 # Optimization level, can be [0, 1, 2, 3, s].
