@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2017-2021 Lutz Ballaschke
+# Copyright (C) 2017-2026 Lutz Ballaschke
 #
 # This is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public

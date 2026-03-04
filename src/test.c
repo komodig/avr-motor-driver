@@ -75,30 +75,28 @@ void test_output(void)
 
 void test_pwm(void)
 {
-    uint8_t x, y;
+    uint8_t x;
 
-    usart_write_str("test pwm\r\n");
-    for(y = 0; y < 3; y++)
+    //usart_write_str("test pwm\r\n");
+    for(x = 0; x < 128; x+=10)
     {
-        for(x = 0; x < 128; x++)
-        {
-            config_pwm(x);
-            _delay_ms(10);
-        }
-        for(x = 128; x > 0; x--)
-        {
-            config_pwm(x);
-            _delay_ms(10);
-        }
+        config_pwm(x);
+        _delay_ms(1000);
     }
-    _delay_ms(300);
+    for(x = 128; x > 0; x-=10)
+    {
+        config_pwm(x);
+        _delay_ms(1000);
+    }
+
     disable_pwm();
 }
 
 
 int main(void)
 {
-    uint8_t x, y;
+    uint8_t x;
+    uint16_t ocra2_val = 0;
 
     test_output();
 
@@ -108,18 +106,26 @@ int main(void)
     sei();
     usart_write_str("welcome to avr-uno!\r\n");
 
-    x = 0;
+    config_pwm(0);
+    /* e.g. set PWM for 50% duty cycle by ocra2_val = 128 */
 
     while(1)
     {
-        set_pin(outpins + x);
-        _delay_ms(300);
-        reset_pin(outpins + x);
-        _delay_ms(300);
-        set_pin(outpins + x);
-        _delay_ms(300);
-        reset_pin(outpins + x);
-        _delay_ms(1500);
+        for(x = 0; x < 128; x+=32)
+        {
+            ocra2_val = x;
+            OCR2A = ocra2_val & 0xFF;
+            OCR2B = (ocra2_val >> 8) & 0xFF;
+	    _delay_ms(1000);
+        }
+        for(x = 128; x > 0; x-=32)
+        {
+            ocra2_val = x;
+            OCR2A = ocra2_val & 0xFF;
+            OCR2B = (ocra2_val >> 8) & 0xFF;
+	    _delay_ms(1000);
+        }
+	_delay_ms(1000);
     }
 
     return 0;
