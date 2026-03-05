@@ -111,21 +111,21 @@ int main(void)
 
     while(1)
     {
-        for(x = 0; x < 128; x+=32)
+        for(x = 0; x < 128; x++)
         {
             ocra2_val = x;
             OCR2A = ocra2_val & 0xFF;
             OCR2B = (ocra2_val >> 8) & 0xFF;
-	    _delay_ms(1000);
+	    _delay_ms(5);
         }
-        for(x = 128; x > 0; x-=32)
+        _delay_ms(1000);
+        for(x = 128; x > 0; x--)
         {
             ocra2_val = x;
             OCR2A = ocra2_val & 0xFF;
             OCR2B = (ocra2_val >> 8) & 0xFF;
-	    _delay_ms(1000);
+	    _delay_ms(5);
         }
-	_delay_ms(1000);
     }
 
     return 0;
