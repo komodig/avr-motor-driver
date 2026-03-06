@@ -111,18 +111,19 @@ int main(void)
 
     while(1)
     {
-        for(x = 5; x < 35; x++)
+        config_pwm(5);
+        for(x = 35; x < 55; x++)
         {
 	    set_pwm_percent(x);
-	    _delay_ms(10);
+            my_delay(1000);
         }
-        _delay_ms(1000);
-        for(x = 35; x > 5; x--)
+        for(x = 55; x > 35; x--)
         {
 	    set_pwm_percent(x);
-            _delay_ms(10);
+            my_delay(1000);
         }
-        _delay_ms(1000);
+        disable_pwm();
+        my_delay(3000);
     }
 
     return 0;
