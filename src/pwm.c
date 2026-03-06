@@ -37,6 +37,7 @@ void config_pwm(uint16_t ocra2_val)
 
 void set_pwm_percent(uint8_t percent)
 {
+    /* SFR value of 128 results to 50% pwm duty cycle */
     uint16_t ocra2_val = percent * 128 / 50;
     OCR2A = ocra2_val & 0xFF;
     OCR2B = (ocra2_val >> 8) & 0xFF;

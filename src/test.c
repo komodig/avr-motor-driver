@@ -77,27 +77,23 @@ void test_pwm(void)
 {
     uint8_t x;
 
-    //usart_write_str("test pwm\r\n");
-    for(x = 0; x < 128; x+=10)
+    config_pwm(5);
+    for(x = 35; x < 55; x++)
     {
-        config_pwm(x);
-        _delay_ms(1000);
+        set_pwm_percent(x);
+        my_delay(1000);
     }
-    for(x = 128; x > 0; x-=10)
+    for(x = 55; x > 35; x--)
     {
-        config_pwm(x);
-        _delay_ms(1000);
+        set_pwm_percent(x);
+        my_delay(1000);
     }
-
     disable_pwm();
 }
 
 
 int main(void)
 {
-    uint8_t x;
-    uint16_t ocra2_val = 0;
-
     test_output();
 
     init_output(&outpins[0], PD7, &PORTD, &DDRD);
@@ -106,23 +102,13 @@ int main(void)
     sei();
     usart_write_str("welcome to avr-uno!\r\n");
 
+    //usart_write_str("test pwm\r\n");
     config_pwm(0);
     /* e.g. set PWM for 50% duty cycle by ocra2_val = 128 */
 
     while(1)
     {
-        config_pwm(5);
-        for(x = 35; x < 55; x++)
-        {
-	    set_pwm_percent(x);
-            my_delay(1000);
-        }
-        for(x = 55; x > 35; x--)
-        {
-	    set_pwm_percent(x);
-            my_delay(1000);
-        }
-        disable_pwm();
+        test_pwm();
         my_delay(3000);
     }
 
