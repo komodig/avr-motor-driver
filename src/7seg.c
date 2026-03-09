@@ -38,3 +38,8 @@ inline void reset_7seg_pin(pinconf_t *gpio)
     *gpio->port |= (1 << gpio->pin);    /* inverted pgio */
 }
 
+void reset_7seg_pins(pinconf_t *gpio)
+{
+    for(int j = 0; j < ADDRCOUNT; j++)
+        reset_7seg_pin(addrpins + j);
+}

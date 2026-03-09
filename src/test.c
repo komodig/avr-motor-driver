@@ -30,12 +30,12 @@
 
 #define DELAY_MAX 127
 
-#define PINCOUNT 11
 #define RISE 1
 #define FALL 0
 
-
 pinconf_t outpins[PINCOUNT];
+pinconf_t addrpins[ADDRCOUNT];
+
 static uint8_t level = 0, direction = RISE;
 
 
@@ -78,9 +78,9 @@ void test_7_seg(void)
     for(int x = 0; x < PINCOUNT; x++)
     {
         set_7seg_pin(outpins + x);
-        my_delay(300);
+        my_delay(700);
         reset_7seg_pin(outpins + x);
-        my_delay(300);
+        my_delay(100);
     }
 }
 
@@ -116,15 +116,24 @@ int main(void)
     init_output(&outpins[4], PB0, &PORTB, &DDRB); // notYg
     init_output(&outpins[5], PD7, &PORTD, &DDRD); // Fg
     init_output(&outpins[6], PD6, &PORTD, &DDRD); // Ir
-    init_output(&outpins[7], PD5, &PORTD, &DDRD); // Ig
-    init_output(&outpins[8], PD4, &PORTD, &DDRD); // Cr
-    init_output(&outpins[9], PD3, &PORTD, &DDRD); // Cg
-    init_output(&outpins[10], PD2, &PORTD, &DDRD); // Fr
 
+    init_output(&addrpins[0], PD2, &PORTD, &DDRD); // Fr
+    init_output(&addrpins[1], PD3, &PORTD, &DDRD); // Cg
+    init_output(&addrpins[2], PD4, &PORTD, &DDRD); // Cr
+    init_output(&addrpins[3], PD5, &PORTD, &DDRD); //
+
+    reset_7seg_pins(addrpins);
+    for(int i = 0; i < PINCOUNT; i++)
+        reset_7seg_pin(outpins + i);
+
+    set_7seg_pin(addrpins + 0);
     test_7_seg();
-    my_delay(500);
     test_7_seg();
-    my_delay(500);
+    reset_7seg_pin(addrpins + 0);
+    set_7seg_pin(addrpins + 1);
+    test_7_seg();
+    test_7_seg();
+    reset_7seg_pin(addrpins + 1);
 
     usart_init(19200);
     sei();
