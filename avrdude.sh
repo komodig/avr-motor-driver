@@ -24,7 +24,7 @@
     FILE="test"
 #fi
 
-DEV=/dev/ttyUSB0
+DEV=/dev/ttyACM0
 
 echo "args: $#"
 if [[ $# -eq 0 || $# -eq 1 && $1 = "probe" ]] ; then
