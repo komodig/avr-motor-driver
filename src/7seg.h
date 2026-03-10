@@ -25,6 +25,7 @@
 extern pinconf_t outpins[PINCOUNT];
 extern pinconf_t addrpins[ADDRCOUNT];
 
+extern void init_7seg(void);
 extern void set_7seg_pin(pinconf_t *gpio);
 extern void reset_7seg_pin(pinconf_t *gpio);
 extern void reset_7seg_pins(pinconf_t *base_addr, uint8_t pin_count);

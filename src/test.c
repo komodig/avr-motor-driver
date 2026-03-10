@@ -76,16 +76,20 @@ void test_output(void)
 
 void test_7seg(void)
 {
-    for(int i = 0; i < ADDRCOUNT; i++)
+    for(int x = 0; x <= 9; x++)
     {
-        set_7seg_pin(addrpins + i);
-        for(int x = 0; x < PINCOUNT; x++)
+        set_7seg_digit(x);
+
+        for(int j = 0; j < 50; j++)
         {
-            set_7seg_pin(outpins + x);
-            my_delay(100);
-            reset_7seg_pin(outpins + x);
+            for(int i = 0; i < ADDRCOUNT; i++)
+            {
+                set_7seg_pin(addrpins + i);
+                my_delay(1);
+                reset_7seg_pins(addrpins, ADDRCOUNT);
+                my_delay(3);  // switched-off for some time to reduce power consumption (and brightness)
+            }
         }
-        reset_7seg_pins(addrpins, ADDRCOUNT);
     }
 }
 
@@ -113,20 +117,7 @@ int main(void)
 {
     test_output();
 
-    init_output(&outpins[0], PB5, &PORTB, &DDRB);
-    init_output(&outpins[1], PB4, &PORTB, &DDRB);
-    /* PB3 is reserved for PWM out */
-    init_output(&outpins[2], PB2, &PORTB, &DDRB);
-    init_output(&outpins[3], PB1, &PORTB, &DDRB);
-    init_output(&outpins[4], PB0, &PORTB, &DDRB);
-    init_output(&outpins[5], PD7, &PORTD, &DDRD);
-    init_output(&outpins[6], PD6, &PORTD, &DDRD);
-
-    init_output(&addrpins[0], PD2, &PORTD, &DDRD);
-    init_output(&addrpins[1], PD3, &PORTD, &DDRD);
-    init_output(&addrpins[2], PC4, &PORTC, &DDRC);
-    init_output(&addrpins[3], PC5, &PORTC, &DDRC);
-
+    init_7seg();
     reset_7seg_pins(addrpins, ADDRCOUNT);
     reset_7seg_pins(outpins, PINCOUNT);
 
