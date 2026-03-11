@@ -17,6 +17,7 @@
 
 #include <avr/io.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <avr/interrupt.h>
 
@@ -78,36 +79,48 @@ void test_7seg(void)
 {
     for(int x = 0; x <= 9; x++)
     {
-        set_7seg_digit(x);
+        display_7seg_digit(x);
 
-        for(int j = 0; j < 50; j++)
+        for(int j = 0; j < 10; j++)
         {
             for(int i = 0; i < ADDRCOUNT; i++)
             {
                 set_7seg_pin(addrpins + i);
-                my_delay(1);
+                _delay_ms(1);
                 reset_7seg_pins(addrpins, ADDRCOUNT);
-                my_delay(3);  // switched-off for some time to reduce power consumption (and brightness)
+                _delay_ms(6); // switched-off for some time to reduce power consumption
             }
         }
     }
+    for(int x = 0; x < 9999; x+=57)
+        display_7seg_4digit_number(x);
 }
 
 
 void test_pwm(void)
 {
-    uint8_t x;
+    uint8_t x, t;
+    uint8_t pbuf[8], outbuf[32];
+    uint16_t delay = 40;
 
     config_pwm(5);
     for(x = 35; x < 55; x++)
     {
         set_pwm_percent(x);
-        my_delay(1000);
+        snprintf(outbuf, 32, "pwm %s%%\r\n", itoa(x, pbuf, 10));
+        usart_write_str(outbuf);
+
+        for(t = 0; t < delay; t++)
+            display_7seg_4digit_number(x);
     }
     for(x = 55; x > 35; x--)
     {
         set_pwm_percent(x);
-        my_delay(1000);
+        snprintf(outbuf, 32, "pwm %s%%\r\n", itoa(x, pbuf, 10));
+        usart_write_str(outbuf);
+
+        for(t = 0; t < delay; t++)
+            display_7seg_4digit_number(x);
     }
     disable_pwm();
 }
@@ -115,19 +128,21 @@ void test_pwm(void)
 
 int main(void)
 {
-    test_output();
-
-    init_7seg();
-    reset_7seg_pins(addrpins, ADDRCOUNT);
-    reset_7seg_pins(outpins, PINCOUNT);
-
-    test_7seg();
-
     usart_init(19200);
     sei();
     usart_write_str("welcome to avr-uno!\r\n");
 
-    //usart_write_str("test pwm\r\n");
+    usart_write_str("\r\ntesting gpio\r\n");
+    test_output();
+
+    usart_write_str("\r\ntesting 7segment display\r\n");
+    init_7seg();
+    reset_7seg_pins(addrpins, ADDRCOUNT);
+    reset_7seg_pins(outpins, PINCOUNT);
+    test_7seg();
+
+
+    usart_write_str("testing pwm\r\n");
     config_pwm(0);
     /* e.g. set PWM for 50% duty cycle by ocra2_val = 128 */
 
