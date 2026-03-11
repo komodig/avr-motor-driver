@@ -14,13 +14,14 @@
  * <http://www.gnu.org/licenses/>.
  *
  */
+#define F_CPU 12000000UL
 
 #include <avr/io.h>
+#include <util/delay.h>
 #include "gpio.h"
 #include "7seg.h"
 
 /*
- *
  *    _a_
  *   |   |
  *  f|   |b
@@ -29,7 +30,6 @@
  *  e|   |c
  *   |___|
  *     d
- *
  *
  */
 void init_7seg(void)
@@ -43,10 +43,10 @@ void init_7seg(void)
     init_output(&outpins[5], PD7, &PORTD, &DDRD);  // b
     init_output(&outpins[6], PD6, &PORTD, &DDRD);  // a
 
-    init_output(&addrpins[0], PD2, &PORTD, &DDRD); // d1
-    init_output(&addrpins[1], PD3, &PORTD, &DDRD); // d2
-    init_output(&addrpins[2], PC4, &PORTC, &DDRC); // d3
-    init_output(&addrpins[3], PC5, &PORTC, &DDRC); // d4
+    init_output(&addrpins[3], PD2, &PORTD, &DDRD); // d1
+    init_output(&addrpins[2], PD3, &PORTD, &DDRD); // d2
+    init_output(&addrpins[1], PC4, &PORTC, &DDRC); // d3
+    init_output(&addrpins[0], PC5, &PORTC, &DDRC); // d4
 }
 
 /*
@@ -77,7 +77,7 @@ void reset_7seg_pins(pinconf_t *base_addr, uint8_t pin_count)
 }
 
 
-void set_7seg_digit(uint8_t digit)
+void display_7seg_digit(uint8_t digit)
 {
     reset_7seg_pins(outpins, PINCOUNT);
 
@@ -158,9 +158,23 @@ void set_7seg_digit(uint8_t digit)
 }
 
 
-void set_7seg_4digit_number(uint16_t number)
+void display_7seg_4digit_number(uint16_t number)
 {
+    /*
+     *  causes 1 + 6 ms delay
+     */
     reset_7seg_pins(outpins, PINCOUNT);
+    reset_7seg_pins(addrpins, ADDRCOUNT);
+
+    for(int d = 0; d < ADDRCOUNT; d++)
+    {
+        set_7seg_pin(addrpins + d);
+        display_7seg_digit(number % 10);
+        number /=10;
+        _delay_ms(1);
+        reset_7seg_pins(addrpins, ADDRCOUNT);
+        _delay_ms(6);
+    }
 }
 
 
