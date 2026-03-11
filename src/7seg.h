@@ -29,6 +29,7 @@ extern void init_7seg(void);
 extern void set_7seg_pin(pinconf_t *gpio);
 extern void reset_7seg_pin(pinconf_t *gpio);
 extern void reset_7seg_pins(pinconf_t *base_addr, uint8_t pin_count);
-extern void set_7seg_digit(uint8_t digit);
+extern void display_7seg_digit(uint8_t digit);
+extern void display_7seg_4digit_number(uint16_t number);
 
 #endif // _7SEG_H_
