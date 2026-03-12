@@ -101,7 +101,12 @@ void test_pwm(void)
 {
     uint8_t x, t;
     uint8_t outbuf[32];
-    uint16_t delay = 40;
+    /*
+     * each display_7seg_4digit_number call causes 7ms delay
+     * multiplied with delay here results in something like
+     * 7+10 * 100 = 17000ms loop time
+     */
+    uint16_t delay = 100;
 
     config_pwm(5);
     for(x = 35; x < 55; x++)
@@ -112,6 +117,8 @@ void test_pwm(void)
 
         for(t = 0; t < delay; t++)
             display_7seg_4digit_number(x);
+
+        //my_delay(500);
     }
     for(x = 55; x > 35; x--)
     {
@@ -121,6 +128,8 @@ void test_pwm(void)
 
         for(t = 0; t < delay; t++)
             display_7seg_4digit_number(x);
+
+        //my_delay(500);
     }
     disable_pwm();
 }

@@ -168,14 +168,17 @@ void display_7seg_4digit_number(uint16_t number)
 
     for(int d = 0; d < ADDRCOUNT; d++)
     {
-        if(number > 0)
+        if(number > 0) // important condition to blank out leading zeros
+        {
             set_7seg_pin(addrpins + d);
             display_7seg_digit(number % 10);
+        }
 
-        number /=10;
+        number /= 10;
         _delay_ms(1);
         reset_7seg_pins(addrpins, ADDRCOUNT);
-        _delay_ms(6);
+        reset_7seg_pins(outpins, PINCOUNT);
+        _delay_ms(6);   // switched-off for some time to reduce power consumption
     }
 }
 
