@@ -22,8 +22,7 @@ char usart_rx_buffer[BUFFER_SIZE];
 unsigned char rx_check = 0;
 volatile unsigned char get_char = 0;
 
-//----------------------------------------------------------------------------
-//Init serielle Schnittstelle
+
 void usart_init(unsigned long baudrate) 
 { 
   	//Enable TXEN im Register UCR TX-Data Enable
@@ -33,8 +32,7 @@ void usart_init(unsigned long baudrate)
 	UBRR0L = 0xFF & (SYSCLK / (baudrate * 16L) - 1);
 }
 
-//----------------------------------------------------------------------------
-//Routine für die Serielle Ausgabe eines Zeichens
+
 void usart_write_char(char c)
 {
 	unsigned long timeout = 5000000;
@@ -52,7 +50,7 @@ void usart_write_char(char c)
 	return;
 }
 
-//------------------------------------------------------------------------------
+
 void usart_write_P (const char *Buffer,...)
 {
 	va_list ap;
@@ -67,7 +65,7 @@ void usart_write_P (const char *Buffer,...)
 	char by;
 	char *ptr;
 		
-	//Ausgabe der Zeichen
+	//send characters
     for(;;)
 	{
 		by = pgm_read_byte(Buffer++);
@@ -140,8 +138,7 @@ void usart_write_P (const char *Buffer,...)
 	va_end(ap);
 }
 
-//----------------------------------------------------------------------------
-//Ausgabe eines Strings
+
 void usart_write_str(char *str)
 {
 	while (*str)
@@ -150,8 +147,7 @@ void usart_write_str(char *str)
 	}
 }
 
-//----------------------------------------------------------------------------
-//Empfang eines Zeichens
+
 ISR (USART_RX_vect)
 {
     unsigned char receive_char;
@@ -185,7 +181,7 @@ ISR (USART_RX_vect)
     {
         usart_rx_buffer[buffercounter++] = receive_char;    
     }
-return;
+    return;
 }
 
 

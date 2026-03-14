@@ -43,8 +43,9 @@ void init_7seg(void)
     init_output(&outpins[5], PD7, &PORTD, &DDRD);  // b
     init_output(&outpins[6], PD6, &PORTD, &DDRD);  // a
 
-    init_output(&addrpins[3], PD2, &PORTD, &DDRD); // d1
+    init_output(&addrpins[3], PC3, &PORTC, &DDRC); // d1
     init_output(&addrpins[2], PD3, &PORTD, &DDRD); // d2
+    /* PC3 is reserved for sensor */
     init_output(&addrpins[1], PC4, &PORTC, &DDRC); // d3
     init_output(&addrpins[0], PC5, &PORTC, &DDRC); // d4
 }
