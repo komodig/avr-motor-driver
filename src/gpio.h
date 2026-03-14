@@ -26,10 +26,15 @@ typedef struct {
 
 } pinconf_t;
 
+extern void init_input(pinconf_t *inpin,
+                        uint8_t gpio,
+                        volatile uint8_t *port,
+                        volatile uint8_t *ddreg);
 extern void init_output(pinconf_t *outpin,
                         uint8_t gpio,
                         volatile uint8_t *port,
                         volatile uint8_t *ddreg);
+extern uint8_t read_pin(pinconf_t *gpio);
 extern void set_pin(pinconf_t *gpio);
 extern void reset_pin(pinconf_t *gpio);
 

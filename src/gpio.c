@@ -19,6 +19,20 @@
 #include "gpio.h"
 #include "usart.h"
 
+void init_input(pinconf_t *inpin,
+        uint8_t gpio,
+        volatile uint8_t *port,
+        volatile uint8_t *ddreg)
+{
+    inpin->pin = gpio;
+    inpin->port = port;
+    inpin->state = 0;
+    inpin->dir_reg = ddreg;
+
+    *ddreg &= ~(1 << gpio); /* configure gpio as input */
+}
+
+
 void init_output(pinconf_t *outpin,
         uint8_t gpio,
         volatile uint8_t *port,
@@ -30,6 +44,12 @@ void init_output(pinconf_t *outpin,
     outpin->dir_reg = ddreg;
 
     *ddreg |= (1 << gpio); /* configure gpio as output */
+}
+
+inline uint8_t read_pin(pinconf_t *gpio)
+{
+    gpio->state = *gpio->port & (1 << gpio->pin);
+    return gpio->state;
 }
 
 inline void set_pin(pinconf_t *gpio)
