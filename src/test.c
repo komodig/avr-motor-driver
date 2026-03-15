@@ -52,31 +52,6 @@ void my_delay(uint16_t ms)
 }
 
 
-void test_output(void)
-{
-    uint8_t x;
-
-    DDRB |= (1 << PB2 | 1 << PB1 | 1 << PB0);
-    DDRD |= (1 << PD7 | 1 << PD6 | 1 << PD5 | 1 << PD4 | 1 << PD3 | 1 << PD2);
-
-    for(x = 1; x < 3; x++)
-    {
-        /* turn LEDs off */
-        PORTB &= ~(1 << PB2 | 1 << PB1 | 1 << PB0);
-        PORTD &= ~(1 << PD7 | 1 << PD6 | 1 << PD5 | 1 << PD4 | 1 << PD3 | 1 << PD2);
-        _delay_ms(111);
-        /* turn LEDs on */
-        PORTB |= (1 << PB2 | 1 << PB1 | 1 << PB0);
-        PORTD |= (1 << PD7 | 1 << PD6 | 1 << PD5 | 1 << PD4 | 1 << PD3 | 1 << PD2);
-        _delay_ms(111);
-    }
-
-    /* turn LEDs off */
-    PORTB &= ~(1 << PB2 | 1 << PB1 | 1 << PB0);
-    PORTD &= ~(1 << PD7 | 1 << PD6 | 1 << PD5 | 1 << PD4 | 1 << PD3 | 1 << PD2);
-}
-
-
 void test_7seg(void)
 {
     for(int x = 0; x <= 9; x++)
@@ -142,7 +117,7 @@ void test_pwm(void)
 
 ISR (INT0_vect)
 {
-    uint8_t new_state = read_pin(&sensor_io);
+    // uint8_t new_state = read_pin(&sensor_io);
     turns++;
 }
 
@@ -163,7 +138,7 @@ int main(void)
     // stackpointer init
     SP = RAMEND;
     // sensor pin init
-    init_input(&sensor_io, PD2, &PORTD, &DDRD);
+    init_input(&sensor_io, PD2, &PIND, &PORTD, &DDRD);
 
     // configure interrupt for sensor pin
     INT0_init();
@@ -173,10 +148,7 @@ int main(void)
     // enable global interrupts
     sei();
 
-    usart_write_str("welcome to avr-uno!\r\n");
-
-    usart_write_str("\r\ntesting gpio\r\n");
-    test_output();
+    usart_write_str("\r\nwelcome to avr-uno!\r\n");
 
     usart_write_str("\r\ntesting 7segment display\r\n");
     init_7seg();

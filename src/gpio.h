@@ -21,6 +21,7 @@
 typedef struct {
     uint8_t pin;
     volatile uint8_t *port;
+    volatile uint8_t *port_2;
     uint8_t state;
     volatile uint8_t *dir_reg;
 
@@ -29,6 +30,7 @@ typedef struct {
 extern void init_input(pinconf_t *inpin,
                         uint8_t gpio,
                         volatile uint8_t *port,
+                        volatile uint8_t *port_2,
                         volatile uint8_t *ddreg);
 extern void init_output(pinconf_t *outpin,
                         uint8_t gpio,

@@ -22,14 +22,23 @@
 void init_input(pinconf_t *inpin,
         uint8_t gpio,
         volatile uint8_t *port,
+        volatile uint8_t *port_2,
         volatile uint8_t *ddreg)
 {
     inpin->pin = gpio;
     inpin->port = port;
+    inpin->port_2 = port_2;
     inpin->state = 0;
     inpin->dir_reg = ddreg;
 
     *ddreg &= ~(1 << gpio); /* configure gpio as input */
+
+    // set pull-up disable to zero to make pull-up config possible
+    MCUCR &= ~(1 << PUD);
+
+    // enable internal pull-up
+    *inpin->port_2 |= (1 << gpio);
+
 }
 
 
