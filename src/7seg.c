@@ -159,11 +159,19 @@ void display_7seg_digit(uint8_t digit)
 }
 
 
-void display_7seg_4digit_number(uint16_t number)
+uint8_t display_7seg_4digit_number(uint16_t number, pinconf_t *task_data)
 {
     /*
-     *  causes 1 + 6 ms delay
+     * this function serves two different tasks
+     * 1. illuminates each digit for 1ms followed by blanked-out waiting delay (e.g. 6ms)
+     *    leading zeros are also blanked-out
+     *
+     * 2. use each ms of waiting time to read pin state and update task_data
+     *
+     * @returns 1 if pin-state changed during function runtime or returns 0 otherwise
      */
+    uint8_t state_toggle = 0;
+    uint8_t old_state = read_pin(task_data);
     reset_7seg_pins(outpins, PINCOUNT);
     reset_7seg_pins(addrpins, ADDRCOUNT);
 
@@ -176,11 +184,22 @@ void display_7seg_4digit_number(uint16_t number)
         }
 
         number /= 10;
-        _delay_ms(1);
+        _delay_ms(1);   // leave digit-display switched-on for 1ms
         reset_7seg_pins(addrpins, ADDRCOUNT);
         reset_7seg_pins(outpins, PINCOUNT);
-        _delay_ms(6);   // switched-off for some time to reduce power consumption
+
+        // switching-off digit-display for some time to reduce power consumption
+        for(int t = 0; t < 6; t++)
+        {
+            if(old_state != read_pin(task_data))
+            {
+                state_toggle = 1;
+            }
+            _delay_ms(1);
+        }
+
     }
+    return state_toggle;
 }
 
 
