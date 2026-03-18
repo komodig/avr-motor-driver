@@ -48,6 +48,8 @@ void init_7seg(void)
     /* PC3 is reserved for sensor */
     init_output(&addrpins[1], PC4, &PORTC, &DDRC); // d3
     init_output(&addrpins[0], PC5, &PORTC, &DDRC); // d4
+
+    reset_all_7seg_pins();
 }
 
 /*
@@ -77,6 +79,11 @@ void reset_7seg_pins(pinconf_t *base_addr, uint8_t pin_count)
         reset_7seg_pin(base_addr + i);
 }
 
+void reset_all_7seg_pins(void)
+{
+    reset_7seg_pins(addrpins, ADDRCOUNT);
+    reset_7seg_pins(outpins, PINCOUNT);
+}
 
 void display_7seg_digit(uint8_t digit)
 {
@@ -159,21 +166,14 @@ void display_7seg_digit(uint8_t digit)
 }
 
 
-uint8_t display_7seg_4digit_number(uint16_t number, pinconf_t *task_data)
+uint8_t display_7seg_4digit_number(uint16_t number)
 {
     /*
-     * this function serves two different tasks
-     * 1. illuminates each digit for 1ms followed by blanked-out waiting delay (e.g. 6ms)
-     *    leading zeros are also blanked-out
+     * illuminates each digit for 1ms followed by blanked-out waiting delay (e.g. 6ms)
+     * leading zeros are also blanked-out
      *
-     * 2. use each ms of waiting time to read pin state and update task_data
-     *
-     * @returns 1 if pin-state changed during function runtime or returns 0 otherwise
      */
-    uint8_t state_toggle = 0;
-    uint8_t old_state = read_pin(task_data);
-    reset_7seg_pins(outpins, PINCOUNT);
-    reset_7seg_pins(addrpins, ADDRCOUNT);
+    reset_all_7seg_pins();
 
     for(int d = 0; d < ADDRCOUNT; d++)
     {
@@ -185,21 +185,50 @@ uint8_t display_7seg_4digit_number(uint16_t number, pinconf_t *task_data)
 
         number /= 10;
         _delay_ms(1);   // leave digit-display switched-on for 1ms
-        reset_7seg_pins(addrpins, ADDRCOUNT);
-        reset_7seg_pins(outpins, PINCOUNT);
+        reset_all_7seg_pins();
 
         // switching-off digit-display for some time to reduce power consumption
         for(int t = 0; t < 6; t++)
         {
-            if(old_state != read_pin(task_data))
-            {
-                state_toggle = 1;
-            }
             _delay_ms(1);
+        }
+    }
+}
+
+
+uint8_t display_next_7seg_number_digit(uint16_t number)
+{
+    /*
+     * illuminates a single digit
+     * leading zeros are blanked-out
+     * it is recommended to leave it 7seg on for e.g. 1ms
+     * before switching off for e.g. 6ms to reduce power consumption
+     *
+     * @see: display_7seg_4digit_number
+     *
+     * the timing however is the responsability of the calling function
+     * this function only determines the digit and enables 7seg output
+     *
+     */
+    static uint8_t n = 0;
+
+    reset_all_7seg_pins();
+
+    for(int d = 0; d < ADDRCOUNT; d++)
+    {
+        number /= 10;
+        if(d == n && number > 0) // important condition to blank out leading zeros number > 0
+        {
+            set_7seg_pin(addrpins + d);
+            display_7seg_digit(number % 10);
+
+            if((n + 1) >= ADDRCOUNT)
+                n = 0;
+            else
+                n++;
         }
 
     }
-    return state_toggle;
 }
 
 
