@@ -32,6 +32,6 @@ extern void reset_7seg_pins(pinconf_t *base_addr, uint8_t pin_count);
 extern void reset_all_7seg_pins(void);
 extern void display_7seg_digit(uint8_t digit);
 extern uint8_t display_7seg_4digit_number(uint16_t number);
-extern uint8_t display_next_7seg_number_digit(uint16_t number);
+extern uint8_t display_next_7seg_number_digit(uint8_t n, uint16_t number);
 
 #endif // _7SEG_H_

@@ -70,8 +70,8 @@ void test_7seg(void)
             }
         }
     }
-    for(int x = 0; x < 9999; x+=57)
-        display_7seg_4digit_number(x);
+    //for(int x = 0; x < 9999; x+=57)
+    //    display_7seg_4digit_number(x);
 }
 
 
@@ -79,7 +79,7 @@ void test_pwm(void)
 {
     uint8_t v, w, x, t, pin_state, pin_toggle;
     uint8_t outbuf[BUFFER_SIZE];
-    uint8_t min = 35, max = 45;
+    uint8_t min = 38, max = 48;
     /*
      * test_pwm has two different tasks:
      *
@@ -186,10 +186,8 @@ int main(void)
     init_7seg();
     test_7seg();
 
-    /*
     usart_write_str("testing pwm\r\n");
     config_pwm(0);
-    */
     /* e.g. set PWM for 50% duty cycle by ocra2_val = 128 */
 
     // sensor pin init
