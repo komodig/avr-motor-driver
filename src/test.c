@@ -32,15 +32,12 @@
 
 #define DELAY_MAX 127
 
-#define RISE 1
-#define FALL 0
-
 pinconf_t outpins[PINCOUNT];
 pinconf_t addrpins[ADDRCOUNT];
 
-static uint8_t trigger = 0, direction = RISE;
+uint8_t outbuf[BUFFER_SIZE];
+static uint8_t trigger = 0;
 pinconf_t sensor_io;
-uint16_t turns = 0;
 
 
 void my_delay(uint16_t ms)
@@ -50,6 +47,18 @@ void my_delay(uint16_t ms)
         _delay_ms(1);
         --ms;
     }
+}
+
+
+void test_pwm(uint8_t val)
+{
+    set_pwm_percent(val);
+    for(int i = 0; i < 200; i++)
+    {
+        display_7seg_4digit_number(val);
+        my_delay(1);
+    }
+    set_pwm_percent(5);
 }
 
 
@@ -70,77 +79,8 @@ void test_7seg(void)
             }
         }
     }
-    //for(int x = 0; x < 9999; x+=57)
-    //    display_7seg_4digit_number(x);
-}
-
-
-void test_pwm(void)
-{
-    uint8_t v, w, x, t, pin_state, pin_toggle;
-    uint8_t outbuf[BUFFER_SIZE];
-    uint8_t min = 38, max = 48;
-    /*
-     * test_pwm has two different tasks:
-     *
-     * 1. illuminates each digit of a 4-digit-number for 1ms
-     *    followed by blanked-out waiting delay (e.g. 6ms)
-     *    leading zeros are also blanked-out
-     *
-     * 2. use each ms of waiting time to read pin state and update task_data
-     *    to detect pin toggle
-     *
-     * each display_7seg_4digit_number call causes 7ms delay per digit
-     * which is multiplied here by the number of <loops>
-     */
-    uint16_t loops = 15;
-
-    usart_write_str("--------------> test_pwm func\r\n");
-    config_pwm(5);
-
-    x = min;
-    v = RISE;
-    while(1)
-    {
-
-        for(t = 0; t < loops; t++)
-        {
-            display_7seg_4digit_number(x); // primary task
-            /*
-            pin_state = read_pin(&sensor_io); // secondary task
-
-            if(trigger > 0)
-            {
-                trigger = 0;  // does nothing atm.
-                //usart_write_str("IRQ trigger!\r\n");
-            }
-
-            if(pin_toggle > 0)
-            {
-                // secondary task
-                pin_toggle = 0;
-
-                usart_write_str("pin toggle!\r\n");
-                snprintf(outbuf, 32, "turns: %d state:%d %d\r\n", turns, sensor_io.state, pin_state);
-                usart_write_str(outbuf);
-            }
-            */
-        }
-
-        // in the past it was one for-loop for each direction raise/fall
-        // the v, x logic allows power rise and fall cycle in a single while-loop
-        if(v == RISE)
-            x+=6;
-        else
-            x-=6;
-
-        if(x >= max && v == RISE)
-            v = FALL;
-
-        if(x < min && v == FALL)
-            break;
-    }
-    disable_pwm();
+    for(int x = 0; x < 9999; x+=73)
+        display_7seg_4digit_number(x);
 }
 
 
@@ -163,7 +103,6 @@ void INT0_init(void)
 
 int main(void)
 {
-    uint8_t outbuf[BUFFER_SIZE];
     uint8_t pin_state;
     // stackpointer init
     SP = RAMEND;
@@ -186,9 +125,10 @@ int main(void)
     init_7seg();
     test_7seg();
 
-    usart_write_str("testing pwm\r\n");
+    usart_write_str("pwm setup\r\n");
     config_pwm(0);
-    /* e.g. set PWM for 50% duty cycle by ocra2_val = 128 */
+    usart_write_str("test pwm\r\n");
+    test_pwm(50);
 
     // sensor pin init
     init_input(&sensor_io, PD2, &PIND, &PORTD, &DDRD);
