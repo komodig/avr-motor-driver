@@ -128,16 +128,16 @@ uint8_t display_scheduler(uint16_t x)
     switch(millisecs++)
     {
         case 0:
-            display_next_7seg_number_digit(0, x);
+            display_7seg_number_digit(0, x);
             break;
         case 1:
-            display_next_7seg_number_digit(1, x);
+            display_7seg_number_digit(1, x);
             break;
         case 2:
-            display_next_7seg_number_digit(2, x);
+            display_7seg_number_digit(2, x);
             break;
         case 3:
-            display_next_7seg_number_digit(3, x);
+            display_7seg_number_digit(3, x);
             break;
         case 4:
             reset_all_7seg_pins();
