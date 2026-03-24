@@ -180,8 +180,8 @@ uint8_t display_7seg_4digit_number(uint16_t number)
     {
         if(number > 0) // important condition to blank out leading zeros
         {
-            set_7seg_pin(addrpins + d);
             display_7seg_digit(number % 10);
+            set_7seg_pin(addrpins + d);
         }
 
         number /= 10;
@@ -194,12 +194,12 @@ uint8_t display_7seg_4digit_number(uint16_t number)
 }
 
 
-uint8_t display_next_7seg_number_digit(uint8_t n, uint16_t number)
+uint8_t display_7seg_number_digit(uint8_t n, uint16_t number)
 {
     /*
      * illuminates a single digit
      * leading zeros are blanked-out
-     * it is recommended to leave it 7seg on for e.g. 1ms
+     * it is recommended to leave 7seg on for e.g. 1ms
      * before switching off for e.g. 6ms to reduce power consumption
      *
      * @see: display_7seg_4digit_number
@@ -212,11 +212,17 @@ uint8_t display_next_7seg_number_digit(uint8_t n, uint16_t number)
 
     for(int d = 0; d < ADDRCOUNT; d++)
     {
-        if(d == n && number > 0) // important condition to blank out leading zeros number > 0
+        if(d == n)
         {
+            if(number > 0) // important condition to blank out leading zeros
+            {
+                display_7seg_digit(number % 10);
+            }
+            if(number == 0 && d == 0)
+            {
+                display_7seg_digit(0);
+            }
             set_7seg_pin(addrpins + d);
-            display_7seg_digit(number % 10);
-
             return number;
         }
         number /= 10;
