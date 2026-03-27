@@ -58,7 +58,7 @@ void test_pwm(uint8_t val)
         display_7seg_4digit_number(val);
         my_delay(1);
     }
-    set_pwm_percent(5);
+    set_pwm_percent(0);
 }
 
 
@@ -127,8 +127,8 @@ int main(void)
 
     usart_write_str("pwm setup\r\n");
     config_pwm(0);
-    usart_write_str("test pwm\r\n");
-    test_pwm(50);
+    //usart_write_str("test pwm\r\n");
+    //test_pwm(42);
 
     // sensor pin init
     init_input(&sensor_io, PD2, &PIND, &PORTD, &DDRD);

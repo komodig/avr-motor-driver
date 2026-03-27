@@ -27,7 +27,9 @@
 #define BSIZE 32
 
 #define PWM_MIN 34
-#define PWM_MAX 38
+#define PWM_MAX 45
+
+#define DEFAULT_TURNS 500
 
 #define HIGH 1
 #define LOW  0
@@ -38,7 +40,7 @@
 
 
 uint8_t outbuf[BUFFER_SIZE];
-uint16_t turns = 0;
+uint32_t turns = 0;
 
 
 uint8_t x_period(void)
@@ -60,6 +62,15 @@ uint8_t x_period(void)
         v = RISE;
 
     return x;
+}
+
+
+uint8_t x_period_limited(uint32_t turns, uint32_t limit)
+{
+    if(turns >= limit)
+        return 0;
+    else
+        return x_period();
 }
 
 
@@ -179,14 +190,16 @@ uint8_t tasks(pinconf_t *sensor_io)
      */
     if(loops == 0)
     {
-        x = x_period();
-        set_pwm_percent(x);
+            x = x_period_limited(turns, DEFAULT_TURNS);
+            set_pwm_percent(x);
+
         snprintf(outbuf, BUFFER_SIZE, "pwm %d%%\r\n", x);
         usart_write_str(outbuf);
     }
     if(loops >= 700)
     {
         x = turns;
+
         if(loops == 700)
         {
             snprintf(outbuf, BUFFER_SIZE, "%d turns\r\n", x);
