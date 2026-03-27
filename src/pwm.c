@@ -26,8 +26,8 @@ void config_pwm(uint16_t ocra2_val)
     /* e.g. set PWM for 50% duty cycle by ocra2_val = 128 */
     OCR2A = ocra2_val & 0xFF;
     OCR2B = (ocra2_val >> 8) & 0xFF;
-     /* set non-inverting mode */
-    TCCR2A |= (1 << COM2A1);
+     /* set inverting mode (see: optocoupler circuit) */
+    TCCR2A |= (1 << COM2A1) | (1 << COM2A0);
     /* set fast PWM Mode */
     TCCR2A |= (1 << WGM21) | (1 << WGM20);
     /* set prescaler to 8 and starts PWM */
