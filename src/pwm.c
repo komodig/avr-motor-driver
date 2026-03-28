@@ -46,7 +46,7 @@ void set_pwm_percent(uint8_t percent)
 
 void disable_pwm(void)
 {
-        TCCR2A = TCCR2B = OCR2A = OCR2B = 0x00;
+    TCCR2A = TCCR2B = OCR2A = OCR2B = 0x00;
 }
 
 

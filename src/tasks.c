@@ -24,12 +24,11 @@
 #include "7seg.h"
 #include "usart.h"
 
-#define BSIZE 32
-
 #define PWM_MIN 34
 #define PWM_MAX 45
 
-#define DEFAULT_TURNS 500
+#define DEFAULT_TURNS 300
+#define MIN_READ_OUTS 5
 
 #define HIGH 1
 #define LOW  0
@@ -48,7 +47,7 @@ uint8_t x_period(void)
     /*
      * a period means pwm rise+fall from min to max and back again
      */
-    static uint8_t x = PWM_MIN, v = RISE;
+    static uint8_t x = PWM_MAX, v = RISE;
 
     if(v == RISE)
         x++;
@@ -67,10 +66,18 @@ uint8_t x_period(void)
 
 uint8_t x_period_limited(uint32_t turns, uint32_t limit)
 {
-    if(turns >= limit)
+    if(turns >= limit-5)
+    {
         return 0;
-    else
-        return x_period();
+    }
+    if(turns >= limit-80)
+    {
+        snprintf(outbuf, BUFFER_SIZE, "pwm ramp down %d%%\r\n", PWM_MIN);
+        usart_write_str(outbuf);
+        return PWM_MIN;
+    }
+
+    return x_period();
 }
 
 
@@ -90,13 +97,9 @@ int get_pin_state(pinconf_t *sensor_io)
         usart_write_str("ERROR! low-state counter overflow!\r\n");
 
     // do not consider the pin has a state with less than 5 read-outs
-    if(high >= 5 && old_state != HIGH)
+    if(high >= MIN_READ_OUTS && old_state != HIGH)
     {
-        /*
-        usart_write_str("pin toggle!\r\n");
-        snprintf(outbuf, BUFFER_SIZE, "high: %d low: %d state:%d %d\r\n", high, low, sensor_io->state, val);
-        usart_write_str(outbuf);
-        */
+        //usart_write_str("pin toggle!\r\n");
         old_state = HIGH;
         high = low = 0;
         return HIGH;
@@ -108,11 +111,7 @@ int get_pin_state(pinconf_t *sensor_io)
         {
             turns++;
         }
-        /*
-        usart_write_str("pin toggle!\r\n");
-        snprintf(outbuf, BUFFER_SIZE, "high: %d low: %d state:%d %d turns: %d\r\n", high, low, sensor_io->state, val, turns);
-        usart_write_str(outbuf);
-        */
+        //usart_write_str("pin toggle!\r\n");
         old_state = LOW;
         high = low = 0;
         return LOW;
@@ -125,11 +124,11 @@ int get_pin_state(pinconf_t *sensor_io)
 uint8_t display_scheduler(uint16_t x)
 {
     /*
-     * assume 1 function call per 1 millisecond
-     * the cases of resetting only are to switch
-     * off for most of the time to reduce power
-     * consumption and keep voltage regulator
-     * temperature low
+     * assume 1 function call every 1 millisecond
+     * the resetting cases are to switch display
+     * off for most cycles to reduce power
+     * consumption and keep the temperature of
+     * the voltage regulator low.
      */
     static uint8_t millisecs = 0;
 
@@ -180,18 +179,18 @@ uint8_t tasks(pinconf_t *sensor_io)
     static uint16_t x = PWM_MIN;
 
     /*
-     * functions which are called every loop (presumably 1 loop each millisecond)
+     * functions that are called every loop (presumably 1 loop each millisecond)
      */
     get_pin_state(sensor_io); // most atomic function
-    display_scheduler(x);     // scales down by factor 10
+    display_scheduler(x);     // time scale down by factor 10
 
     /*
      * functions called in much bigger intervals
      */
     if(loops == 0)
     {
-            x = x_period_limited(turns, DEFAULT_TURNS);
-            set_pwm_percent(x);
+        x = x_period_limited(turns, DEFAULT_TURNS);
+        set_pwm_percent(x);
 
         snprintf(outbuf, BUFFER_SIZE, "pwm %d%%\r\n", x);
         usart_write_str(outbuf);

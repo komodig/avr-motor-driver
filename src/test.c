@@ -36,7 +36,6 @@ pinconf_t outpins[PINCOUNT];
 pinconf_t addrpins[ADDRCOUNT];
 
 uint8_t outbuf[BUFFER_SIZE];
-static uint8_t trigger = 0;
 pinconf_t sensor_io;
 
 
@@ -86,7 +85,7 @@ void test_7seg(void)
 
 ISR (INT0_vect)
 {
-    trigger = 1;
+    ;;
 }
 
 
@@ -121,9 +120,9 @@ int main(void)
     usart_write_str("\r\n**                             **");
     usart_write_str("\r\n*********************************\r\n");
 
-    usart_write_str("\r\ntesting 7segment display\r\n");
+    usart_write_str("\r\n7segment display setup\r\n");
     init_7seg();
-    test_7seg();
+    //test_7seg();
 
     usart_write_str("pwm setup\r\n");
     config_pwm(0);
