@@ -102,7 +102,6 @@ void INT0_init(void)
 
 int main(void)
 {
-    uint8_t pin_state;
     // stackpointer init
     SP = RAMEND;
 
