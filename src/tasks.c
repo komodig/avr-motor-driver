@@ -28,6 +28,8 @@
 #define PWM_MAX 50
 
 #define DEFAULT_TURNS 500
+#define DEFAULT_TURNS_BY_20 (DEFAULT_TURNS/20)
+
 #define MIN_READ_OUTS 5
 
 #define HIGH 1
@@ -81,25 +83,22 @@ uint8_t x_period_or_shutdown(uint16_t turns, uint16_t limit, int freeze)
      *
      * @param freeze to not change x but just return it by x_period()
      */
-    static uint8_t x = PWM_MAX;
-
-    if(turns >= limit)
+    if(turns >= limit - 1)
     {
         return 0;
     }
-
-    if(turns >= limit-(DEFAULT_TURNS/10))
+    else if(turns >= limit - 5)
     {
         return PWM_MIN;
     }
-
-    /*
-    if(x > PWM_MIN)
-        x--;
-
-    return x;
-    */
-    return x_period(freeze);
+    else if(turns >= limit - DEFAULT_TURNS_BY_20)
+    {
+        return PWM_MIN + 1;
+    }
+    else
+    {
+        return x_period(freeze);
+    }
 }
 
 
@@ -247,6 +246,7 @@ uint8_t tasks(pinconf_t *sensor_io)
         set_pwm_percent(x);
     }
 
+    // condition value should be more dynamic
     if(loops >= 666)
     {
         loops = 0;
