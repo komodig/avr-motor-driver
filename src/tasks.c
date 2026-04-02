@@ -83,12 +83,12 @@ uint8_t x_period_or_shutdown(uint16_t turns, uint16_t limit, int freeze)
      */
     static uint8_t x = PWM_MAX;
 
-    if(turns >= limit-1)
+    if(turns >= limit)
     {
         return 0;
     }
 
-    if(turns >= limit-30)
+    if(turns >= limit-(DEFAULT_TURNS/10))
     {
         return PWM_MIN;
     }
