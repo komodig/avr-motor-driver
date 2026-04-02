@@ -37,7 +37,7 @@
 pinconf_t outpins[PINCOUNT];
 pinconf_t addrpins[ADDRCOUNT];
 
-static uint8_t level = 0, direction = RISE;
+static uint8_t trigger = 0, direction = RISE;
 pinconf_t sensor_io;
 uint16_t turns = 0;
 
@@ -70,13 +70,13 @@ void test_7seg(void)
         }
     }
     for(int x = 0; x < 9999; x+=57)
-        display_7seg_4digit_number(x);
+        display_7seg_4digit_number(x, &sensor_io);
 }
 
 
 void test_pwm(void)
 {
-    uint8_t x, t;
+    uint8_t v, w, x, t, pin_state, pin_toggle;
     uint8_t outbuf[32];
     uint8_t min = 35, max = 53;
     /*
@@ -86,21 +86,11 @@ void test_pwm(void)
      */
     uint16_t delay = 40;
 
+    usart_write_str("--------------> test_pwm func\r\n");
     config_pwm(5);
-    for(x = min; x < max; x++)
-    {
-        set_pwm_percent(x);
-        snprintf(outbuf, 32, "pwm %d%%\r\n", x);
-        usart_write_str(outbuf);
-        snprintf(outbuf, 32, "turns: %d state:%d\r\n", turns, sensor_io.state);
-        usart_write_str(outbuf);
-
-        for(t = 0; t < delay; t++)
-        {
-            display_7seg_4digit_number(x);
-        }
-    }
-    for(x = max; x > min; x--)
+    x = min;
+    v = RISE;
+    while(1)
     {
         set_pwm_percent(x);
         snprintf(outbuf, 32, "pwm %d%%\r\n", x);
@@ -108,8 +98,35 @@ void test_pwm(void)
 
         for(t = 0; t < delay; t++)
         {
-            display_7seg_4digit_number(x);
+            pin_toggle = display_7seg_4digit_number(x, &sensor_io);
+            pin_state = read_pin(&sensor_io);
+
+            if(trigger > 0)
+            {
+                trigger = 0;  // does nothing atm.
+                //usart_write_str("IRQ trigger!\r\n");
+            }
+            if(pin_toggle > 0)
+            {
+                pin_toggle = 0;
+                usart_write_str("pin toggle!\r\n");
+                snprintf(outbuf, 32, "turns: %d state:%d %d\r\n", turns, sensor_io.state, pin_state);
+                usart_write_str(outbuf);
+            }
         }
+
+        // in the past it was one for-loop for each direction raise/fall
+        // the v, x logic allows power rise and fall cycle in a single while-loop
+        if(v == RISE)
+            x++;
+        else
+            x--;
+
+        if(x >= max && v == RISE)
+            v = FALL;
+
+        if(x < min && v == FALL)
+            break;
     }
     disable_pwm();
 }
@@ -117,8 +134,7 @@ void test_pwm(void)
 
 ISR (INT0_vect)
 {
-    // uint8_t new_state = read_pin(&sensor_io);
-    turns++;
+    trigger = 1;
 }
 
 
