@@ -111,13 +111,13 @@ int main(void)
 
     while(1)
     {
-        for(x = 15; x < 75; x++)
+        for(x = 5; x < 35; x++)
         {
 	    set_pwm_percent(x);
 	    _delay_ms(10);
         }
         _delay_ms(1000);
-        for(x = 75; x > 15; x--)
+        for(x = 35; x > 5; x--)
         {
 	    set_pwm_percent(x);
             _delay_ms(10);
