@@ -26,23 +26,15 @@
 #include "gpio.h"
 #include "pwm.h"
 #include "usart.h"
-#include "timer.h"
-#include "led_patterns.h"
 
 #define DELAY_MAX 127
 
-#define FCK_BAR 0x44
-#define FKK_BAY 0x55
+#define PINCOUNT 16
+#define RISE 1
+#define FALL 0
 
-#define I_RED 1
-#define C_RED 2
-#define I_GREEN 9
-#define C_GREEN 10
-#define Y_RED 6
-#define NOT_Y_RED 7
-#define Y_GREEN 14
-#define NOT_Y_GREEN 15
 
+pinconf_t outpins[PINCOUNT];
 static uint8_t level = 0, direction = RISE;
 
 
@@ -104,64 +96,19 @@ void test_pwm(void)
 }
 
 
-void test_pins(uint8_t pattern)
-{
-    uint8_t x, y;
-
-    usart_write_str("test pins\r\n");
-    x = (pattern == FCK_BAR ? 0 : PINCOUNT/2);
-    y = (pattern == FCK_BAR ? PINCOUNT/2 : PINCOUNT);
-    for(; x < y; x++)
-    {
-        if(x == I_RED || x == I_GREEN)
-        {
-            continue;
-        }
-        if(x == NOT_Y_RED || x == NOT_Y_GREEN)
-        {
-            continue;
-        }
-        usart_write_char(x + 0x30);
-        usart_write_char('\r');
-        usart_write_char('\n');
-
-        set_pin(outpins + x);
-
-        if(pattern == FCK_BAR && (x == Y_RED || x == Y_GREEN))
-        {
-            set_pin(outpins + x+1);
-        }
-        if(pattern == FKK_BAY && (x == C_RED || x == C_GREEN))
-        {
-            set_pin(outpins + x-1);
-        }
-
-        _delay_ms(200);
-        reset_pin(outpins + x);
-
-        if(pattern == FCK_BAR && (x == Y_RED || x == Y_GREEN))
-        {
-            reset_pin(outpins + x+1);
-        }
-        if(pattern == FKK_BAY && (x == C_RED || x == C_GREEN))
-        {
-            reset_pin(outpins + x-1);
-        }
-    }
-}
-
-
 int main(void)
 {
     uint8_t x, y;
 
     test_output();
 
-    init_output(&outpins[8], PD7, &PORTD, &DDRD);
+    init_output(&outpins[0], PD7, &PORTD, &DDRD);
 
     usart_init(19200);
     sei();
     usart_write_str("welcome to avr-uno!\r\n");
+
+    x = 0;
 
     while(1)
     {
@@ -169,6 +116,10 @@ int main(void)
         _delay_ms(300);
         reset_pin(outpins + x);
         _delay_ms(300);
+        set_pin(outpins + x);
+        _delay_ms(300);
+        reset_pin(outpins + x);
+        _delay_ms(1500);
     }
 
     return 0;
