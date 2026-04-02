@@ -100,14 +100,14 @@ void test_7seg(void)
 void test_pwm(void)
 {
     uint8_t x, t;
-    uint8_t pbuf[8], outbuf[32];
+    uint8_t outbuf[32];
     uint16_t delay = 40;
 
     config_pwm(5);
     for(x = 35; x < 55; x++)
     {
         set_pwm_percent(x);
-        snprintf(outbuf, 32, "pwm %s%%\r\n", itoa(x, pbuf, 10));
+        snprintf(outbuf, 32, "pwm %d%%\r\n", x);
         usart_write_str(outbuf);
 
         for(t = 0; t < delay; t++)
@@ -116,7 +116,7 @@ void test_pwm(void)
     for(x = 55; x > 35; x--)
     {
         set_pwm_percent(x);
-        snprintf(outbuf, 32, "pwm %s%%\r\n", itoa(x, pbuf, 10));
+        snprintf(outbuf, 32, "pwm %d%%\r\n", x);
         usart_write_str(outbuf);
 
         for(t = 0; t < delay; t++)
