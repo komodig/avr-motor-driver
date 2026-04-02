@@ -27,7 +27,7 @@
 #define BSIZE 32
 
 #define PWM_MIN 34
-#define PWM_MAX 38 
+#define PWM_MAX 38
 
 #define HIGH 1
 #define LOW  0
@@ -47,7 +47,7 @@ uint8_t x_period(void)
      * a period means pwm rise+fall from min to max and back again
      */
     static uint8_t x = PWM_MIN, v = RISE;
-    
+
     if(v == RISE)
         x++;
     else
@@ -67,7 +67,7 @@ int get_pin_state(pinconf_t *sensor_io)
 {
     static uint16_t old_state = NONE, high = 0, low = 0;
     int val = read_pin(sensor_io);
-    
+
     if(val & (1 << sensor_io->pin))
         high++;
     else
@@ -81,7 +81,7 @@ int get_pin_state(pinconf_t *sensor_io)
     // do not consider the pin has a state before at least 5 read-outs
     // assume state if either high or low count 5 more measurements than the other
     //if(high >= 5 && high - low >= 5)
-    if(high >= 5 && old_state != HIGH) 
+    if(high >= 5 && old_state != HIGH)
     {
         /*
         usart_write_str("pin toggle!\r\n");
@@ -92,7 +92,7 @@ int get_pin_state(pinconf_t *sensor_io)
         high = low = 0;
         return HIGH;
     }
-    
+
     if(low >= 5 && old_state != LOW)
     {
         if(old_state == HIGH)
@@ -109,16 +109,23 @@ int get_pin_state(pinconf_t *sensor_io)
         high = low = 0;
         return LOW;
     }
-   
-    return NONE; 
+
+    return NONE;
 }
 
 
 uint8_t display_scheduler(uint16_t x)
 {
-    static uint8_t state = 0;
-    
-    switch(state++)
+    /*
+     * assume 1 function call per 1 millisecond
+     * the cases of resetting only are to switch
+     * off for most of the time to reduce power
+     * consumption and keep voltage regulator
+     * temperature low
+     */
+    static uint8_t millisecs = 0;
+
+    switch(millisecs++)
     {
         case 0:
             display_next_7seg_number_digit(0, x);
@@ -151,11 +158,11 @@ uint8_t display_scheduler(uint16_t x)
             reset_all_7seg_pins();
             break;
         default:
-            state = 0;
+            millisecs = 0;
             break;
     }
 
-    return state;
+    return millisecs;
 }
 
 
@@ -163,12 +170,18 @@ uint8_t tasks(pinconf_t *sensor_io)
 {
     static uint16_t loops = 0;
     static uint16_t x = PWM_MIN;
-    
-    get_pin_state(sensor_io);
-    display_scheduler(x);
 
+    /*
+     * functions which are called every loop (presumably 1 loop each millisecond)
+     */
+    get_pin_state(sensor_io); // most atomic function
+    display_scheduler(x);     // scales down by factor 10
+
+    /*
+     * functions called in much bigger intervals
+     */
     if(loops == 0)
-    { 
+    {
         x = x_period();
         set_pwm_percent(x);
         snprintf(outbuf, BUFFER_SIZE, "pwm %d%%\r\n", x);
