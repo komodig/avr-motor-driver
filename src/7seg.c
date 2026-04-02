@@ -92,7 +92,6 @@ void display_7seg_digit(uint8_t digit)
 
     switch(digit)
     {
-        default:
         case 0:
             set_7seg_pin(outpins + 1);
             set_7seg_pin(outpins + 2);
@@ -163,6 +162,9 @@ void display_7seg_digit(uint8_t digit)
             set_7seg_pin(outpins + 5);
             set_7seg_pin(outpins + 6);
             break;
+        default:
+            reset_7seg_pins(outpins, PINCOUNT);
+            break;
     }
 }
 
@@ -218,10 +220,11 @@ uint8_t display_7seg_number_digit(uint8_t n, uint16_t number)
             {
                 display_7seg_digit(number % 10);
             }
-            if(number == 0 && d == 0)
+            else if(number == 0 && d == 0)
             {
                 display_7seg_digit(0);
             }
+
             set_7seg_pin(addrpins + d);
             return number;
         }
