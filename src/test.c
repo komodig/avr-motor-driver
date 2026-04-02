@@ -101,15 +101,16 @@ void test_pwm(void)
 {
     uint8_t x, t;
     uint8_t outbuf[32];
+    uint8_t min = 35, max = 53;
     /*
      * each display_7seg_4digit_number call causes 7ms delay
      * multiplied with delay here results in something like
-     * 7+10 * 100 = 17000ms loop time
+     * 7 * 50 = 350ms loop time
      */
-    uint16_t delay = 100;
+    uint16_t delay = 40;
 
     config_pwm(5);
-    for(x = 35; x < 55; x++)
+    for(x = min; x < max; x++)
     {
         set_pwm_percent(x);
         snprintf(outbuf, 32, "pwm %d%%\r\n", x);
@@ -117,10 +118,8 @@ void test_pwm(void)
 
         for(t = 0; t < delay; t++)
             display_7seg_4digit_number(x);
-
-        //my_delay(500);
     }
-    for(x = 55; x > 35; x--)
+    for(x = max; x > min; x--)
     {
         set_pwm_percent(x);
         snprintf(outbuf, 32, "pwm %d%%\r\n", x);
@@ -128,8 +127,6 @@ void test_pwm(void)
 
         for(t = 0; t < delay; t++)
             display_7seg_4digit_number(x);
-
-        //my_delay(500);
     }
     disable_pwm();
 }
