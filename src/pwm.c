@@ -35,6 +35,14 @@ void config_pwm(uint16_t ocra2_val)
 }
 
 
+void set_pwm_percent(uint8_t percent)
+{
+    uint16_t ocra2_val = percent * 128 / 50;
+    OCR2A = ocra2_val & 0xFF;
+    OCR2B = (ocra2_val >> 8) & 0xFF;
+}
+
+
 void disable_pwm(void)
 {
         TCCR2A = TCCR2B = OCR2A = OCR2B = 0x00;

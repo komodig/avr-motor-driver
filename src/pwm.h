@@ -18,6 +18,7 @@
 #ifndef _PWM_H_
 #define _PWM_H_
 extern void config_pwm(uint16_t ocra2_val);
+void set_pwm_percent(uint8_t percent);
 extern void disable_pwm(void);
 extern void test_pwm(void);
 #endif /* _PWM_H_ */
