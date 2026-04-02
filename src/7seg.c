@@ -21,6 +21,7 @@
 #include "gpio.h"
 #include "7seg.h"
 
+
 /*
  *    _a_
  *   |   |
@@ -196,7 +197,7 @@ uint8_t display_7seg_4digit_number(uint16_t number)
 }
 
 
-uint8_t display_next_7seg_number_digit(uint16_t number)
+uint8_t display_next_7seg_number_digit(uint8_t n, uint16_t number)
 {
     /*
      * illuminates a single digit
@@ -210,24 +211,18 @@ uint8_t display_next_7seg_number_digit(uint16_t number)
      * this function only determines the digit and enables 7seg output
      *
      */
-    static uint8_t n = 0;
-
     reset_all_7seg_pins();
 
     for(int d = 0; d < ADDRCOUNT; d++)
     {
-        number /= 10;
         if(d == n && number > 0) // important condition to blank out leading zeros number > 0
         {
             set_7seg_pin(addrpins + d);
             display_7seg_digit(number % 10);
 
-            if((n + 1) >= ADDRCOUNT)
-                n = 0;
-            else
-                n++;
+            return number;
         }
-
+        number /= 10;
     }
 }
 
