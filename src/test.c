@@ -26,6 +26,7 @@
 #include <util/delay.h>
 #include "gpio.h"
 #include "7seg.h"
+#include "tasks.h"
 #include "pwm.h"
 #include "usart.h"
 
@@ -70,14 +71,14 @@ void test_7seg(void)
         }
     }
     for(int x = 0; x < 9999; x+=57)
-        display_7seg_4digit_number(x, &sensor_io);
+        display_7seg_4digit_number(x);
 }
 
 
 void test_pwm(void)
 {
     uint8_t v, w, x, t, pin_state, pin_toggle;
-    uint8_t outbuf[32];
+    uint8_t outbuf[BUFFER_SIZE];
     uint8_t min = 35, max = 45;
     /*
      * test_pwm has two different tasks:
@@ -101,13 +102,10 @@ void test_pwm(void)
     v = RISE;
     while(1)
     {
-        set_pwm_percent(x);
-        snprintf(outbuf, 32, "pwm %d%%\r\n", x);
-        usart_write_str(outbuf);
 
         for(t = 0; t < loops; t++)
         {
-            pin_toggle = display_7seg_4digit_number(x, &sensor_io); // primary task
+            display_7seg_4digit_number(x); // primary task
             /*
             pin_state = read_pin(&sensor_io); // secondary task
 
@@ -165,8 +163,8 @@ void INT0_init(void)
 
 int main(void)
 {
-    uint8_t outbuf[32];
-    uint8_t state_toggle = 0, pin_state, old_state;
+    uint8_t outbuf[BUFFER_SIZE];
+    uint8_t pin_state;
     // stackpointer init
     SP = RAMEND;
 
@@ -186,8 +184,6 @@ int main(void)
 
     usart_write_str("\r\ntesting 7segment display\r\n");
     init_7seg();
-    reset_7seg_pins(addrpins, ADDRCOUNT);
-    reset_7seg_pins(outpins, PINCOUNT);
     test_7seg();
 
     /*
@@ -198,24 +194,12 @@ int main(void)
 
     // sensor pin init
     init_input(&sensor_io, PD2, &PIND, &PORTD, &DDRD);
-    old_state = read_pin(&sensor_io);
 
+    usart_write_str("running 7seg display + tasks\r\n");
     while(1)
     {
-        test_pwm();
-        /*
-        pin_state = read_pin(&sensor_io);
-        if(old_state != pin_state)
-        {
-            state_toggle = 1;
-            old_state = pin_state;
-            usart_write_str("pin toggle!\r\n");
-            //snprintf(outbuf, 32, "turns: %d state:%d %d\r\n", turns, sensor_io.state, pin_state);
-            //usart_write_str(outbuf);
-            state_toggle = 0;
-        }
-        */
-        my_delay(3000);
+        tasks(&sensor_io);
+        _delay_ms(1);
     }
 
     return 0;
