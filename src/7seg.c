@@ -168,8 +168,10 @@ void display_7seg_4digit_number(uint16_t number)
 
     for(int d = 0; d < ADDRCOUNT; d++)
     {
-        set_7seg_pin(addrpins + d);
-        display_7seg_digit(number % 10);
+        if(number > 0)
+            set_7seg_pin(addrpins + d);
+            display_7seg_digit(number % 10);
+
         number /=10;
         _delay_ms(1);
         reset_7seg_pins(addrpins, ADDRCOUNT);
