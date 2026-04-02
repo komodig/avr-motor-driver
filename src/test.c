@@ -73,14 +73,19 @@ void test_output(void)
     PORTD &= ~(1 << PD7 | 1 << PD6 | 1 << PD5 | 1 << PD4 | 1 << PD3 | 1 << PD2);
 }
 
-void test_7_seg(void)
+
+void test_7seg(void)
 {
-    for(int x = 0; x < PINCOUNT; x++)
+    for(int i = 0; i < ADDRCOUNT; i++)
     {
-        set_7seg_pin(outpins + x);
-        my_delay(700);
-        reset_7seg_pin(outpins + x);
-        my_delay(100);
+        set_7seg_pin(addrpins + i);
+        for(int x = 0; x < PINCOUNT; x++)
+        {
+            set_7seg_pin(outpins + x);
+            my_delay(100);
+            reset_7seg_pin(outpins + x);
+        }
+        reset_7seg_pins(addrpins, ADDRCOUNT);
     }
 }
 
@@ -108,32 +113,24 @@ int main(void)
 {
     test_output();
 
-    init_output(&outpins[0], PB5, &PORTB, &DDRB); // Yg
-    init_output(&outpins[1], PB4, &PORTB, &DDRB); // Yr
+    init_output(&outpins[0], PB5, &PORTB, &DDRB);
+    init_output(&outpins[1], PB4, &PORTB, &DDRB);
     /* PB3 is reserved for PWM out */
-    init_output(&outpins[2], PB2, &PORTB, &DDRB); // Ag
-    init_output(&outpins[3], PB1, &PORTB, &DDRB); // Ar
-    init_output(&outpins[4], PB0, &PORTB, &DDRB); // notYg
-    init_output(&outpins[5], PD7, &PORTD, &DDRD); // Fg
-    init_output(&outpins[6], PD6, &PORTD, &DDRD); // Ir
+    init_output(&outpins[2], PB2, &PORTB, &DDRB);
+    init_output(&outpins[3], PB1, &PORTB, &DDRB);
+    init_output(&outpins[4], PB0, &PORTB, &DDRB);
+    init_output(&outpins[5], PD7, &PORTD, &DDRD);
+    init_output(&outpins[6], PD6, &PORTD, &DDRD);
 
-    init_output(&addrpins[0], PD2, &PORTD, &DDRD); // Fr
-    init_output(&addrpins[1], PD3, &PORTD, &DDRD); // Cg
-    init_output(&addrpins[2], PD4, &PORTD, &DDRD); // Cr
-    init_output(&addrpins[3], PD5, &PORTD, &DDRD); //
+    init_output(&addrpins[0], PD2, &PORTD, &DDRD);
+    init_output(&addrpins[1], PD3, &PORTD, &DDRD);
+    init_output(&addrpins[2], PC4, &PORTC, &DDRC);
+    init_output(&addrpins[3], PC5, &PORTC, &DDRC);
 
-    reset_7seg_pins(addrpins);
-    for(int i = 0; i < PINCOUNT; i++)
-        reset_7seg_pin(outpins + i);
+    reset_7seg_pins(addrpins, ADDRCOUNT);
+    reset_7seg_pins(outpins, PINCOUNT);
 
-    set_7seg_pin(addrpins + 0);
-    test_7_seg();
-    test_7_seg();
-    reset_7seg_pin(addrpins + 0);
-    set_7seg_pin(addrpins + 1);
-    test_7_seg();
-    test_7_seg();
-    reset_7seg_pin(addrpins + 1);
+    test_7seg();
 
     usart_init(19200);
     sei();
@@ -145,6 +142,7 @@ int main(void)
 
     while(1)
     {
+
         test_pwm();
         my_delay(3000);
     }
