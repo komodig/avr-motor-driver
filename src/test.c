@@ -78,7 +78,7 @@ void test_pwm(void)
 {
     uint8_t v, w, x, t, pin_state, pin_toggle;
     uint8_t outbuf[32];
-    uint8_t min = 35, max = 53;
+    uint8_t min = 35, max = 45;
     /*
      * test_pwm has two different tasks:
      *
@@ -92,10 +92,11 @@ void test_pwm(void)
      * each display_7seg_4digit_number call causes 7ms delay per digit
      * which is multiplied here by the number of <loops>
      */
-    uint16_t loops = 40;
+    uint16_t loops = 15;
 
     usart_write_str("--------------> test_pwm func\r\n");
     config_pwm(5);
+
     x = min;
     v = RISE;
     while(1)
@@ -107,6 +108,7 @@ void test_pwm(void)
         for(t = 0; t < loops; t++)
         {
             pin_toggle = display_7seg_4digit_number(x, &sensor_io); // primary task
+            /*
             pin_state = read_pin(&sensor_io); // secondary task
 
             if(trigger > 0)
@@ -114,6 +116,7 @@ void test_pwm(void)
                 trigger = 0;  // does nothing atm.
                 //usart_write_str("IRQ trigger!\r\n");
             }
+
             if(pin_toggle > 0)
             {
                 // secondary task
@@ -123,14 +126,15 @@ void test_pwm(void)
                 snprintf(outbuf, 32, "turns: %d state:%d %d\r\n", turns, sensor_io.state, pin_state);
                 usart_write_str(outbuf);
             }
+            */
         }
 
         // in the past it was one for-loop for each direction raise/fall
         // the v, x logic allows power rise and fall cycle in a single while-loop
         if(v == RISE)
-            x++;
+            x+=6;
         else
-            x--;
+            x-=6;
 
         if(x >= max && v == RISE)
             v = FALL;
@@ -161,20 +165,24 @@ void INT0_init(void)
 
 int main(void)
 {
+    uint8_t outbuf[32];
+    uint8_t state_toggle = 0, pin_state, old_state;
     // stackpointer init
     SP = RAMEND;
-    // sensor pin init
-    init_input(&sensor_io, PD2, &PIND, &PORTD, &DDRD);
 
     // configure interrupt for sensor pin
-    INT0_init();
+    //INT0_init();
 
     usart_init(19200);
 
     // enable global interrupts
     sei();
 
-    usart_write_str("\r\nwelcome to avr-uno!\r\n");
+    usart_write_str("\r\n*********************************");
+    usart_write_str("\r\n**                             **");
+    usart_write_str("\r\n**     welcome to avr-uno!     **");
+    usart_write_str("\r\n**                             **");
+    usart_write_str("\r\n*********************************\r\n");
 
     usart_write_str("\r\ntesting 7segment display\r\n");
     init_7seg();
@@ -182,15 +190,31 @@ int main(void)
     reset_7seg_pins(outpins, PINCOUNT);
     test_7seg();
 
-
+    /*
     usart_write_str("testing pwm\r\n");
     config_pwm(0);
+    */
     /* e.g. set PWM for 50% duty cycle by ocra2_val = 128 */
+
+    // sensor pin init
+    init_input(&sensor_io, PD2, &PIND, &PORTD, &DDRD);
+    old_state = read_pin(&sensor_io);
 
     while(1)
     {
-
         test_pwm();
+        /*
+        pin_state = read_pin(&sensor_io);
+        if(old_state != pin_state)
+        {
+            state_toggle = 1;
+            old_state = pin_state;
+            usart_write_str("pin toggle!\r\n");
+            //snprintf(outbuf, 32, "turns: %d state:%d %d\r\n", turns, sensor_io.state, pin_state);
+            //usart_write_str(outbuf);
+            state_toggle = 0;
+        }
+        */
         my_delay(3000);
     }
 
