@@ -68,7 +68,7 @@ int get_pin_state(pinconf_t *sensor_io)
     static uint16_t old_state = NONE, high = 0, low = 0;
     int val = read_pin(sensor_io);
 
-    if(val & (1 << sensor_io->pin))
+    if(val)
         high++;
     else
         low++;
@@ -78,9 +78,7 @@ int get_pin_state(pinconf_t *sensor_io)
     if(low == 0xffff)
         usart_write_str("ERROR! low-state counter overflow!\r\n");
 
-    // do not consider the pin has a state before at least 5 read-outs
-    // assume state if either high or low count 5 more measurements than the other
-    //if(high >= 5 && high - low >= 5)
+    // do not consider the pin has a state with less than 5 read-outs
     if(high >= 5 && old_state != HIGH)
     {
         /*
@@ -104,7 +102,6 @@ int get_pin_state(pinconf_t *sensor_io)
         snprintf(outbuf, BUFFER_SIZE, "high: %d low: %d state:%d %d turns: %d\r\n", high, low, sensor_io->state, val, turns);
         usart_write_str(outbuf);
         */
-
         old_state = LOW;
         high = low = 0;
         return LOW;
