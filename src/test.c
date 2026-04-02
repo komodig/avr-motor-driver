@@ -80,11 +80,19 @@ void test_pwm(void)
     uint8_t outbuf[32];
     uint8_t min = 35, max = 53;
     /*
-     * each display_7seg_4digit_number call causes 7ms delay
-     * multiplied with delay here results in something like
-     * 7 * 50 = 350ms loop time
+     * test_pwm has two different tasks:
+     *
+     * 1. illuminates each digit of a 4-digit-number for 1ms
+     *    followed by blanked-out waiting delay (e.g. 6ms)
+     *    leading zeros are also blanked-out
+     *
+     * 2. use each ms of waiting time to read pin state and update task_data
+     *    to detect pin toggle
+     *
+     * each display_7seg_4digit_number call causes 7ms delay per digit
+     * which is multiplied here by the number of <loops>
      */
-    uint16_t delay = 40;
+    uint16_t loops = 40;
 
     usart_write_str("--------------> test_pwm func\r\n");
     config_pwm(5);
@@ -96,10 +104,10 @@ void test_pwm(void)
         snprintf(outbuf, 32, "pwm %d%%\r\n", x);
         usart_write_str(outbuf);
 
-        for(t = 0; t < delay; t++)
+        for(t = 0; t < loops; t++)
         {
-            pin_toggle = display_7seg_4digit_number(x, &sensor_io);
-            pin_state = read_pin(&sensor_io);
+            pin_toggle = display_7seg_4digit_number(x, &sensor_io); // primary task
+            pin_state = read_pin(&sensor_io); // secondary task
 
             if(trigger > 0)
             {
@@ -108,7 +116,9 @@ void test_pwm(void)
             }
             if(pin_toggle > 0)
             {
+                // secondary task
                 pin_toggle = 0;
+
                 usart_write_str("pin toggle!\r\n");
                 snprintf(outbuf, 32, "turns: %d state:%d %d\r\n", turns, sensor_io.state, pin_state);
                 usart_write_str(outbuf);
