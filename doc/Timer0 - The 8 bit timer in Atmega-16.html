@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<!--[if IE 6]>
+<html id="ie6" lang="en-US" prefix="og: http://ogp.me/ns#">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="en-US" prefix="og: http://ogp.me/ns#">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="en-US" prefix="og: http://ogp.me/ns#">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html class="js" prefix="og: http://ogp.me/ns#" lang="en-US"><!--<![endif]--><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"><link rel="stylesheet" type="text/css" href="Timer0%20-%20The%208%20bit%20timer%20in%20Atmega-16_files/222c5.css" media="all">
+
+	<meta charset="UTF-8">
+			
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<link rel="pingback" href="">
+
+		<!--[if lt IE 9]>
+	<script src="http://avrgeeks.com/wp-content/themes/Extra/scripts/ext/html5.js" type="text/javascript"></script>
+	<![endif]-->
+
+	<script src="Timer0%20-%20The%208%20bit%20timer%20in%20Atmega-16_files/linkid.js" async="" type="text/javascript"></script><script src="Timer0%20-%20The%208%20bit%20timer%20in%20Atmega-16_files/analytics.js" async=""></script><script type="text/javascript">
+		document.documentElement.className = 'js';
+	</script>
+
+	<script>var et_site_url='http://avrgeeks.com';var et_post_id='516';function et_core_page_resource_fallback(a,b){"undefined"===typeof b&&(b=a.sheet.cssRules&&0===a.sheet.cssRules.length);b&&(a.onerror=null,a.onload=null,a.href?a.href=et_site_url+"/?et_core_page_resource="+a.id+et_post_id:a.src&&(a.src=et_site_url+"/?et_core_page_resource="+a.id+et_post_id))}
+</script><title>Timer0 in Atmega16-AVR- The 8 bit timer in Atmega-16</title>
+
+	<!-- Meta Tag Manager -->
+	<meta name="google-site-verification" content="AvPswQEe0RjeFUm8rP44Ts2JwQuab7vgM--SPBRSXNE">
+	<!-- / Meta Tag Manager -->
+
+<!-- This site is optimized with the Yoast SEO plugin v6.1.1 - https://yoa.st/1yg?utm_content=6.1.1 -->
+<meta name="description" content="This article is all about the timer0 in Atmega 16 of AVR.Learn about initialization of the timer and the use of the prescaler to generate the desired delay.">
+<link rel="canonical" href="http://avrgeeks.com/timer0-atmega16-avr/">
+<meta property="og:locale" content="en_US">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Timer0 in Atmega16-AVR- The 8 bit timer in Atmega-16">
+<meta property="og:description" content="This article is all about the timer0 in Atmega 16 of AVR.Learn about initialization of the timer and the use of the prescaler to generate the desired delay.">
+<meta property="og:url" content="http://avrgeeks.com/timer0-atmega16-avr/">
+<meta property="og:site_name" content="AVR Geeks">
+<meta property="article:section" content="Timers Tutorial">
+<meta property="article:published_time" content="2017-10-31T08:08:18+00:00">
+<meta property="article:modified_time" content="2017-12-26T23:05:02+00:00">
+<meta property="og:updated_time" content="2017-12-26T23:05:02+00:00">
+<meta property="og:image" content="http://avrgeeks.com/wp-content/uploads/2017/10/Time-1.png">
+<meta property="og:image:width" content="405">
+<meta property="og:image:height" content="358">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:description" content="This article is all about the timer0 in Atmega 16 of AVR.Learn about initialization of the timer and the use of the prescaler to generate the desired delay.">
+<meta name="twitter:title" content="Timer0 in Atmega16-AVR- The 8 bit timer in Atmega-16">
+<meta name="twitter:image" content="http://avrgeeks.com/wp-content/uploads/2017/10/Time-1.png">
+<script type="application/ld+json">{"@context":"http:\/\/schema.org","@type":"WebSite","@id":"#website","url":"http:\/\/avrgeeks.com\/","name":"AVR Geeks","potentialAction":{"@type":"SearchAction","target":"http:\/\/avrgeeks.com\/?s={search_term_string}","query-input":"required name=search_term_string"}}</script>
+<script type="application/ld+json">{"@context":"http:\/\/schema.org","@type":"Person","url":"http:\/\/avrgeeks.com\/timer0-atmega16-avr\/","sameAs":[],"@id":"#person","name":"Prakhar Bhatt"}</script>
+<!-- / Yoast SEO plugin. -->
+
+<link rel="dns-prefetch" href="http://fonts.googleapis.com/">
+<link rel="dns-prefetch" href="http://s.w.org/">
+<link rel="alternate" type="application/rss+xml" title="AVR Geeks » Feed" href="http://avrgeeks.com/feed/">
+<link rel="alternate" type="application/rss+xml" title="AVR Geeks » Comments Feed" href="http://avrgeeks.com/comments/feed/">
+<link rel="alternate" type="application/rss+xml" title="AVR Geeks » Timer0 in Atmega16-AVR Comments Feed" href="http://avrgeeks.com/timer0-atmega16-avr/feed/">
+<!-- This site uses the Google Analytics by MonsterInsights plugin v6.2.6 - Using Analytics tracking - https://www.monsterinsights.com/ -->
+<script type="text/javascript" data-cfasync="false">
+		var disableStr = 'ga-disable-UA-111521608-1';
+
+	/* Function to detect opted out users */
+	function __gaTrackerIsOptedOut() {
+		return document.cookie.indexOf(disableStr + '=true') > -1;
+	}
+
+	/* Disable tracking if the opt-out cookie exists. */
+	if ( __gaTrackerIsOptedOut() ) {
+		window[disableStr] = true;
+	}
+
+	/* Opt-out function */
+	function __gaTrackerOptout() {
+	  document.cookie = disableStr + '=true; expires=Thu, 31 Dec 2099 23:59:59 UTC; path=/';
+	  window[disableStr] = true;
+	}
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','//www.google-analytics.com/analytics.js','__gaTracker');
+
+	__gaTracker('create', 'UA-111521608-1', 'auto');
+	__gaTracker('set', 'forceSSL', true);
+	__gaTracker('require', 'displayfeatures');
+	__gaTracker('require', 'linkid', 'linkid.js');
+	__gaTracker('send','pageview');
+</script>
+<!-- / Google Analytics by MonsterInsights -->
+		<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/2.3\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/2.3\/svg\/","svgExt":".svg","source":{"concatemoji":"http:\/\/avrgeeks.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=4.9.1"}};
+			!function(a,b,c){function d(a,b){var c=String.fromCharCode;l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,a),0,0);var d=k.toDataURL();l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,b),0,0);var e=k.toDataURL();return d===e}function e(a){var b;if(!l||!l.fillText)return!1;switch(l.textBaseline="top",l.font="600 32px Arial",a){case"flag":return!(b=d([55356,56826,55356,56819],[55356,56826,8203,55356,56819]))&&(b=d([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]),!b);case"emoji":return b=d([55358,56794,8205,9794,65039],[55358,56794,8203,9794,65039]),!b}return!1}function f(a){var c=b.createElement("script");c.src=a,c.defer=c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var g,h,i,j,k=b.createElement("canvas"),l=k.getContext&&k.getContext("2d");for(j=Array("flag","emoji"),c.supports={everything:!0,everythingExceptFlag:!0},i=0;i<j.length;i++)c.supports[j[i]]=e(j[i]),c.supports.everything=c.supports.everything&&c.supports[j[i]],"flag"!==j[i]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[j[i]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(h=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",h,!1),a.addEventListener("load",h,!1)):(a.attachEvent("onload",h),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),g=c.source||{},g.concatemoji?f(g.concatemoji):g.wpemoji&&g.twemoji&&(f(g.twemoji),f(g.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script><script defer="defer" type="text/javascript" src="Timer0%20-%20The%208%20bit%20timer%20in%20Atmega-16_files/wp-emoji-release.js"></script>
+		<meta content="Extra v.2.0.91" name="generator"><style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+<link rel="stylesheet" id="extra-fonts-css" href="Timer0%20-%20The%208%20bit%20timer%20in%20Atmega-16_files/css.css" type="text/css" media="all">
+
+
+
+<script type="text/javascript">
+/* <![CDATA[ */
+var monsterinsights_frontend = {"js_events_tracking":"true","is_debug_mode":"false","download_extensions":"doc,exe,js,pdf,ppt,tgz,zip,xls","inbound_paths":"","home_url":"http:\/\/avrgeeks.com","track_download_as":"event","internal_label":"int","hash_tracking":"false"};
+/* ]]> */
+</script>
+<script type="text/javascript" src="Timer0%20-%20The%208%20bit%20timer%20in%20Atmega-16_files/92205.js"></script>
+
+
+
+<link rel="https://api.w.org/" href="http://avrgeeks.com/wp-json/">
+<link rel="shortlink" href="http://avrgeeks.com/?p=516">
+<link rel="alternate" type="application/json+oembed" href="http://avrgeeks.com/wp-json/oembed/1.0/embed?url=http%3A%2F%2Favrgeeks.com%2Ftimer0-atmega16-avr%2F">
+<link rel="alternate" type="text/xml+oembed" href="http://avrgeeks.com/wp-json/oembed/1.0/embed?url=http%3A%2F%2Favrgeeks.com%2Ftimer0-atmega16-avr%2F&amp;format=xml">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1"><link rel="icon" href="http://avrgeeks.com/wp-content/uploads/2017/12/cropped-avrgeeks1-32x32.jpg" sizes="32x32">
+<link rel="icon" href="http://avrgeeks.com/wp-content/uploads/2017/12/cropped-avrgeeks1-192x192.jpg" sizes="192x192">
+<link rel="apple-touch-icon-precomposed" href="http://avrgeeks.com/wp-content/uploads/2017/12/cropped-avrgeeks1-180x180.jpg">
+<meta name="msapplication-TileImage" content="http://avrgeeks.com/wp-content/uploads/2017/12/cropped-avrgeeks1-270x270.jpg">
+<style>[data-columns]::before{visibility:hidden;position:absolute;font-size:1px;}</style><style id="fit-vids-style">.fluid-width-video-wrapper{width:100%;position:relative;padding:0;}.fluid-width-video-wrapper iframe,.fluid-width-video-wrapper object,.fluid-width-video-wrapper embed {position:absolute;top:0;left:0;width:100%;height:100%;}</style></head>
+<body class="post-template-default single single-post postid-516 single-format-standard et_bloom et_extra et_fullwidth_nav et_fixed_nav et_pb_gutters3 et_primary_nav_dropdown_animation_slideInX et_secondary_nav_dropdown_animation_Default with_sidebar with_sidebar_right et_includes_sidebar et_minified_js et_minified_css gecko">
+	<div id="page-container" class="page-container et-fixed-header">
+				<!-- Header -->
+		<header class="header left-right">
+			
+			<!-- Main Header -->
+			<div style="height: 85px;" id="main-header-wrapper">
+				<div id="main-header" data-fixed-height="85">
+					<div class="container">
+					<!-- ET Ad -->
+						
+						
+						<!-- Logo -->
+						<a data-initial-height="132" data-initial-width="176" data-fixed-width="86.13333333333333" style="width: 86px;" class="logo" href="http://avrgeeks.com/" data-fixed-height="76">
+							<img src="Timer0%20-%20The%208%20bit%20timer%20in%20Atmega-16_files/avrgeeks1-trial3.png" alt="AVR Geeks" id="logo">
+						</a>
+
+						
+						<!-- ET Navigation -->
+						<div id="et-navigation" class="">
+							<ul id="et-menu" class="nav"><li id="menu-item-456" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-456"><a href="http://www.avrgeeks.com/">Home</a></li>
+<li id="menu-item-485" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-has-children mega-menu menu-item-has-children mega-menu-cols menu-item-485"><a href="http://avrgeeks.com/category/tutorial-post/">Tutorial Post</a>
+<ul class="sub-menu">
+	<li id="menu-item-487" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-487"><a href="http://avrgeeks.com/category/tutorial-post-for-beginners/">Tutorial Post for Beginners</a></li>
+	<li id="menu-item-486" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-486"><a href="http://avrgeeks.com/category/lcd-tutorial-post/">LCD Tutorial Post</a></li>
+	<li id="menu-item-488" class="menu-item menu-item-type-taxonomy menu-item-object-category current-post-ancestor current-menu-parent current-post-parent menu-item-488"><a href="http://avrgeeks.com/category/timers-tutorial/">Timers Tutorial</a></li>
+	<li id="menu-item-489" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-489"><a href="http://avrgeeks.com/category/tutorial-post/">Tutorial Post</a></li>
+	<li id="menu-item-490" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-490"><a href="http://avrgeeks.com/category/interrupt-tutorial/">Interrupt Tutorial</a></li>
+</ul>
+</li>
+<li id="menu-item-455" class="menu-item menu-item-type-taxonomy menu-item-object-category mega-menu menu-item-has-children mega-menu-featured mega-featured-3 menu-item-455"><a href="http://avrgeeks.com/category/project/">Projects</a><ul class="sub-menu" style="border-top-color: rgb(219, 80, 159);">
+					<li>
+						<h2 class="title">Featured</h2>
+						<div class="featured-post">
+							<a href="http://avrgeeks.com/evm-using-avr/" title="Electronic Voting Machine using Atmega16" class="featured-image">
+				<img src="Timer0%20-%20The%208%20bit%20timer%20in%20Atmega-16_files/EVM-Program-in-Simulator-440x264.png" alt="Electronic Voting Machine using Atmega16">
+			</a>
+							<h2>Electronic Voting Machine using Atmega16</h2>
+							<div class="post-meta">
+								<span class="updated">Nov 20, 2017</span> | <a href="http://avrgeeks.com/category/interrupt-tutorial/" rel="tag">Interrupt Tutorial</a>, <a href="http://avrgeeks.com/category/project/" rel="tag">Projects</a> | <span class="rating-stars" title="Rating: 0.00"><span class="post-meta-icon rating-star rating-star-empty rating-star-1"></span>
+<span class="post-meta-icon rating-star rating-star-empty rating-star-2"></span>
+<span class="post-meta-icon rating-star rating-star-empty rating-star-3"></span>
+<span class="post-meta-icon rating-star rating-star-empty rating-star-4"></span>
+<span class="post-meta-icon rating-star rating-star-empty rating-star-5"></span>
+</span>
+							</div>
+						</div>
+					</li>
+					<li>
+						<h2 class="title">Featured</h2>
+						<div class="featured-post">
+							<a href="http://avrgeeks.com/custom-character-generation-in-16x2-lcd/" title="Custom Character in 16×2 LCD" class="featured-image">
+				<img src="Timer0%20-%20The%208%20bit%20timer%20in%20Atmega-16_files/Custum-Characters3-440x264.png" alt="Custom Character in 16×2 LCD">
+			</a>
+							<h2>Custom Character in 16x2 LCD</h2>
+							<div class="post-meta">
+								<span class="updated">Oct 5, 2017</span> | <a href="http://avrgeeks.com/category/lcd-tutorial-post/" rel="tag">LCD Tutorial Post</a>, <a href="http://avrgeeks.com/category/project/" rel="tag">Projects</a> | <span class="rating-stars" title="Rating: 0.00"><span class="post-meta-icon rating-star rating-star-empty rating-star-1"></span>
+<span class="post-meta-icon rating-star rating-star-empty rating-star-2"></span>
+<span class="post-meta-icon rating-star rating-star-empty rating-star-3"></span>
+<span class="post-meta-icon rating-star rating-star-empty rating-star-4"></span>
+<span class="post-meta-icon rating-star rating-star-empty rating-star-5"></span>
+</span>
+							</div>
+						</div>
+					</li>
+					<li>
+						<h2 class="title">Featured</h2>
+						<div class="featured-post">
+							<a href="http://avrgeeks.com/scrolling-text-button-counter-atmega16/" title="Scrolling text and Button counter" class="featured-image">
+				<img src="Timer0%20-%20The%208%20bit%20timer%20in%20Atmega-16_files/Execution-1-440x264.png" alt="Scrolling text and Button counter">
+			</a>
+							<h2>Scrolling text and Button counter</h2>
+							<div class="post-meta">
+								<span class="updated">Sep 28, 2017</span> | <a href="http://avrgeeks.com/category/lcd-tutorial-post/" rel="tag">LCD Tutorial Post</a>, <a href="http://avrgeeks.com/category/project/" rel="tag">Projects</a> | <span class="rating-stars" title="Rating: 0.00"><span class="post-meta-icon rating-star rating-star-empty rating-star-1"></span>
+<span class="post-meta-icon rating-star rating-star-empty rating-star-2"></span>
+<span class="post-meta-icon rating-star rating-star-empty rating-star-3"></span>
+<span class="post-meta-icon rating-star rating-star-empty rating-star-4"></span>
+<span class="post-meta-icon rating-star rating-star-empty rating-star-5"></span>
+</span>
+							</div>
+						</div>
+					</li></ul></li>
+<li id="menu-item-699" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-699"><a href="http://avrgeeks.com/contact-us/">Contact Us</a></li>
+</ul>							<div id="et-mobile-navigation">
+			<span class="show-menu">
+				<div class="show-menu-button">
+					<span></span>
+					<span></span>
+					<span></span>
+				</div>
+				<p>Select Page</p>
+			</span>
+			<nav>
+			<ul id="et-extra-mobile-menu" class="et_extra_mobile_menu"><li id="menu-item-456" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-456 et_first_mobile_item"><a href="http://www.avrgeeks.com/">Home</a></li>
+<li id="menu-item-485" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-has-children mega-menu menu-item-has-children mega-menu-cols menu-item-485"><a href="http://avrgeeks.com/category/tutorial-post/">Tutorial Post</a>
+<ul class="sub-menu">
+	<li id="menu-item-487" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-487"><a href="http://avrgeeks.com/category/tutorial-post-for-beginners/">Tutorial Post for Beginners</a></li>
+	<li id="menu-item-486" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-486"><a href="http://avrgeeks.com/category/lcd-tutorial-post/">LCD Tutorial Post</a></li>
+	<li id="menu-item-488" class="menu-item menu-item-type-taxonomy menu-item-object-category current-post-ancestor current-menu-parent current-post-parent menu-item-488"><a href="http://avrgeeks.com/category/timers-tutorial/">Timers Tutorial</a></li>
+	<li id="menu-item-489" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-489"><a href="http://avrgeeks.com/category/tutorial-post/">Tutorial Post</a></li>
+	<li id="menu-item-490" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-490"><a href="http://avrgeeks.com/category/interrupt-tutorial/">Interrupt Tutorial</a></li>
+</ul>
+</li>
+<li id="menu-item-455" class="menu-item menu-item-type-taxonomy menu-item-object-category mega-menu menu-item-has-children mega-menu-featured mega-featured-3 menu-item-455"><a href="http://avrgeeks.com/category/project/">Projects</a><ul class="sub-menu" style="border-top-color: #db509f;">
+					<li>
+						<h2 class="title">Featured</h2>
+						<div class="featured-post">
+							<a href="http://avrgeeks.com/evm-using-avr/" title="Electronic Voting Machine using Atmega16" class="featured-image">
+				<img src="Timer0%20-%20The%208%20bit%20timer%20in%20Atmega-16_files/EVM-Program-in-Simulator-440x264.png" alt="Electronic Voting Machine using Atmega16">
+			</a>
+							<h2>Electronic Voting Machine using Atmega16</h2>
+							<div class="post-meta">
+								<span class="updated">Nov 20, 2017</span> | <a href="http://avrgeeks.com/category/interrupt-tutorial/" rel="tag">Interrupt Tutorial</a>, <a href="http://avrgeeks.com/category/project/" rel="tag">Projects</a> | <span class="rating-stars" title="Rating: 0.00"><span class="post-meta-icon rating-star rating-star-empty rating-star-1"></span>
+<span class="post-meta-icon rating-star rating-star-empty rating-star-2"></span>
+<span class="post-meta-icon rating-star rating-star-empty rating-star-3"></span>
+<span class="post-meta-icon rating-star rating-star-empty rating-star-4"></span>
+<span class="post-meta-icon rating-star rating-star-empty rating-star-5"></span>
+</span>
+							</div>
+						</div>
+					</li>
+					<li>
+						<h2 class="title">Featured</h2>
+						<div class="featured-post">
+							<a href="http://avrgeeks.com/custom-character-generation-in-16x2-lcd/" title="Custom Character in 16×2 LCD" class="featured-image">
+				<img src="Timer0%20-%20The%208%20bit%20timer%20in%20Atmega-16_files/Custum-Characters3-440x264.png" alt="Custom Character in 16×2 LCD">
+			</a>
+							<h2>Custom Character in 16x2 LCD</h2>
+							<div class="post-meta">
+								<span class="updated">Oct 5, 2017</span> | <a href="http://avrgeeks.com/category/lcd-tutorial-post/" rel="tag">LCD Tutorial Post</a>, <a href="http://avrgeeks.com/category/project/" rel="tag">Projects</a> | <span class="rating-stars" title="Rating: 0.00"><span class="post-meta-icon rating-star rating-star-empty rating-star-1"></span>
+<span class="post-meta-icon rating-star rating-star-empty rating-star-2"></span>
+<span class="post-meta-icon rating-star rating-star-empty rating-star-3"></span>
+<span class="post-meta-icon rating-star rating-star-empty rating-star-4"></span>
+<span class="post-meta-icon rating-star rating-star-empty rating-star-5"></span>
+</span>
+							</div>
+						</div>
+					</li>
+					<li>
+						<h2 class="title">Featured</h2>
+						<div class="featured-post">
+							<a href="http://avrgeeks.com/scrolling-text-button-counter-atmega16/" title="Scrolling text and Button counter" class="featured-image">
+				<img src="Timer0%20-%20The%208%20bit%20timer%20in%20Atmega-16_files/Execution-1-440x264.png" alt="Scrolling text and Button counter">
+			</a>
+							<h2>Scrolling text and Button counter</h2>
+							<div class="post-meta">
+								<span class="updated">Sep 28, 2017</span> | <a href="http://avrgeeks.com/category/lcd-tutorial-post/" rel="tag">LCD Tutorial Post</a>, <a href="http://avrgeeks.com/category/project/" rel="tag">Projects</a> | <span class="rating-stars" title="Rating: 0.00"><span class="post-meta-icon rating-star rating-star-empty rating-star-1"></span>
+<span class="post-meta-icon rating-star rating-star-empty rating-star-2"></span>
+<span class="post-meta-icon rating-star rating-star-empty rating-star-3"></span>
+<span class="post-meta-icon rating-star rating-star-empty rating-star-4"></span>
+<span class="post-meta-icon rating-star rating-star-empty rating-star-5"></span>
+</span>
+							</div>
+						</div>
+					</li></ul></li>
+<li id="menu-item-699" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-699"><a href="http://avrgeeks.com/contact-us/">Contact Us</a></li>
+</ul></nav>
+		</div> <!-- /#et-mobile-navigation -->						</div><!-- /#et-navigation -->
+					</div><!-- /.container -->
+				</div><!-- /#main-header -->
+			</div><!-- /#main-header-wrapper -->
+
+		</header>
+
+				<div id="main-content">
+		<div class="container">
+		<div id="content-area" class="clearfix">
+			<div class="et_pb_extra_column_main">
+																<article id="post-516" class="module single-post-module post-516 post type-post status-publish format-standard has-post-thumbnail hentry category-timers-tutorial et-doesnt-have-featured_image et-has-post-format-content et_post_format-et-post-format-standard">
+														<div class="post-header">
+								<h1 class="entry-title">Timer0 in Atmega16-AVR</h1>
+								<div class="post-meta vcard">
+									<p>Posted by <a href="http://avrgeeks.com/author/prkhrbhtt/" class="url fn" title="Posts by Prakhar Bhatt" rel="author">Prakhar Bhatt</a> | <span class="updated">Oct 31, 2017</span> | <a href="http://avrgeeks.com/category/timers-tutorial/" rel="tag">Timers Tutorial</a> | <a class="comments-link" href="http://avrgeeks.com/timer0-atmega16-avr/#comments">0 <span title="comment count" class="comment-bubble post-meta-icon"></span></a> | <span class="rating-stars" title="Rating: 0.00"><span class="post-meta-icon rating-star rating-star-empty rating-star-1"></span>
+<span class="post-meta-icon rating-star rating-star-empty rating-star-2"></span>
+<span class="post-meta-icon rating-star rating-star-empty rating-star-3"></span>
+<span class="post-meta-icon rating-star rating-star-empty rating-star-4"></span>
+<span class="post-meta-icon rating-star rating-star-empty rating-star-5"></span>
+</span></p>
+								</div>
+							</div>
+							
+							
+														
+							<div class="post-wrap">
+															<div class="post-content entry-content">
+									<p>In the previous post of <a href="http://www.avrgeeks.com/timers-atmega16-avr/" target="_blank" rel="noopener">timer-introduction</a>,
+ we had learned the basic concepts of timers and timer register in 
+Atmega16. If you are not familiar with the timer, do read my post 
+(Introduction to timers)before continuing further. In this article, we 
+will learn a bit more about TIMER-0 in Atmega16 of AVR as well as the 
+use of prescaler to generate the desired delay. We will do this by 
+learning how to use timer0 without&nbsp;prescaling, and then with 
+prescaling.</p>
+<h2>Timer0 without Prescaling</h2>
+<h3>Problem Statement</h3>
+<p>Let’s say, we have to generate the delay 4 ms when our microcontroller is operating at 32KHz. We know now from the <a href="http://www.avrgeeks.com/timers-atmega16-avr/" target="_blank" rel="noopener">previous article</a> that we have to find the timer count before continue. We can find the timer value by the following formula:<img class="size-medium wp-image-901 aligncenter" src="Timer0%20-%20The%208%20bit%20timer%20in%20Atmega-16_files/timer-count-300x46.png" alt="" srcset="http://avrgeeks.com/wp-content/uploads/2017/10/timer-count-300x46.png 300w, http://avrgeeks.com/wp-content/uploads/2017/10/timer-count-440x68.png 440w, http://avrgeeks.com/wp-content/uploads/2017/10/timer-count.png 446w" sizes="(max-width: 300px) 100vw, 300px" height="46" width="300"></p>
+<p>In our case, the value&nbsp;of the time required is 4 ms and our 
+microcontroller is operating at 32 KHz. By calculating the value, we 
+found that the required timer count is 127. It can easily be 
+achieved&nbsp;by Timer-0 which is an&nbsp;8-bit timer. What we need to 
+do is, we need to keep track of the timer value, as soon as&nbsp;it 
+reaches the timer value we found, it gets resets.</p>
+<h2>The TCNT0 Register</h2>
+<p><img class="alignnone wp-image-919 size-full" title="TCNT0 Register" src="Timer0%20-%20The%208%20bit%20timer%20in%20Atmega-16_files/TCNT0.jpg" alt="Timer0 in Atmega16" srcset="http://avrgeeks.com/wp-content/uploads/2017/10/TCNT0.jpg 759w, http://avrgeeks.com/wp-content/uploads/2017/10/TCNT0-300x45.jpg 300w, http://avrgeeks.com/wp-content/uploads/2017/10/TCNT0-610x92.jpg 610w" sizes="(max-width: 759px) 100vw, 759px" height="115" width="759"></p>
+<p>This is the register where the value of 8-bit timer stored. The value
+ of this register increases/decreases automatically. Also, you can write
+ as well as read the data from this register. Now you may think- <strong><em>How are going to start the timer?</em></strong> Well, there is another register for that, which is-TCCR0-(Timer Counter Control Register).</p>
+<h2>The TCCR0 Register</h2>
+<p>The tccr0 register is:</p>
+<p><img class="aligncenter wp-image-918 size-full" title="TCCR0 Register" src="Timer0%20-%20The%208%20bit%20timer%20in%20Atmega-16_files/tccr0.jpg" alt="Timer0 in Atmega16" srcset="http://avrgeeks.com/wp-content/uploads/2017/10/tccr0.jpg 514w, http://avrgeeks.com/wp-content/uploads/2017/10/tccr0-300x47.jpg 300w" sizes="(max-width: 514px) 100vw, 514px" height="81" width="514"></p>
+<p>The last three bits of TCCR0 register is CS00, CS01, and CS02. The 
+value of these bits decides the value of prescaler. The value of these 
+bits and the prescaler is given below in the table.</p>
+<p><img class="aligncenter wp-image-917 size-full" title="Value of Three bits vs prescaler" src="Timer0%20-%20The%208%20bit%20timer%20in%20Atmega-16_files/table-prescaler.jpg" alt="Timer0 in AVR" srcset="http://avrgeeks.com/wp-content/uploads/2017/10/table-prescaler.jpg 540w, http://avrgeeks.com/wp-content/uploads/2017/10/table-prescaler-300x127.jpg 300w" sizes="(max-width: 540px) 100vw, 540px" height="228" width="540"></p>
+<p>As, we are not using prescaler in this example, therefore we have to 
+high the CS00 bit, which can be done by using shift register, TCCR0 |= 
+(1 &lt;&lt; CS00); Note that, we have to initialise this register 
+because if we don’t initialise it, the value of CS00, CS01 and CS02 will
+ remain ‘0’ which is the default and according to the table, the timer 
+will remain stopped.</p>
+<h2>The Program</h2>
+<pre class="line-numbers language-c code-toolbar"><code class=" language-c">#include &lt;avr/io.h&gt;
+ 
+void timer0_init()
+{
+TCCR0 |= (1 &lt;&lt; CS00);// initialising the timer with no prescaling
+TCNT0 = 0;// initialize timer
+}
+
+int main(void)
+{
+timer0_init();// calling timer function
+while(1)// infinite loop
+    {
+      if (TCNT0 &gt;= 127)// check if the timer count reaches 127
+        {
+          TCNT0 = 0;  // reset the timer
+        }
+    }
+}</code><div class="toolbar"><div class="toolbar-item"><a>Copy</a></div></div></pre>
+<h2>The Prescaler</h2>
+<p>Let’s understand a bit more about prescaler. We have an introduction of this in my previous post-<a href="http://www.avrgeeks.com/timers-atmega16-avr/" target="_blank" rel="noopener">introduction to timers</a>.
+ Here, we will learn about selecting the suitable value of prescaler and
+ it’s implementation in timer. Those who are thinking what the heck is 
+this prescaler? A prescaler is a factor by which you are dividing the 
+frequency of the microcontroller. So, if the prescaler is 8, it means 
+you are dividing the frequency by the factor of 8. <strong><em>Suppose 
+we have to produce the delay of 10 ms and the operating frequency of the
+ microcontroller is 4 MHz and since this delay is so large, it is not 
+possible to achieve it without prescaling. What should the value of 
+prescaler&nbsp;we should choose?</em></strong></p>
+<p><img class="aligncenter wp-image-920 size-full" title="Values of prescaler " src="Timer0%20-%20The%208%20bit%20timer%20in%20Atmega-16_files/prescale.jpg" alt="Timer0 in Atmega16" srcset="http://avrgeeks.com/wp-content/uploads/2017/10/prescale.jpg 836w, http://avrgeeks.com/wp-content/uploads/2017/10/prescale-300x102.jpg 300w, http://avrgeeks.com/wp-content/uploads/2017/10/prescale-768x261.jpg 768w, http://avrgeeks.com/wp-content/uploads/2017/10/prescale-610x207.jpg 610w" sizes="(max-width: 836px) 100vw, 836px" height="284" width="836"></p>
+<p>We should select the value of the prescaler according to the need. 
+Because selecting the large value of prescaler means you are trading it 
+with accuracy and resolution. In the problem discussed above, I can take
+ 256 as well as 1024 as a prescaler, but I am selecting 256 because 
+selecting the higher value “prescaler” means trading off with accuracy 
+and resolution.</p>
+<h2>Program with Prescaler</h2>
+<pre class="line-numbers language-c code-toolbar" data-start="1"><code class=" language-c">#include &lt;avr/io.h&gt;
+ 
+void timer0_init()
+{
+TCCR0 |= (1 &lt;&lt; CS02);// setting up the timer with the prescaling of 256
+TCNT0 = 0;// initialize timer
+}
+
+int main(void)
+  {
+   timer0_init();// calling function to initialize timer
+   while(1)// infinite loop
+    {
+      if (TCNT0 &gt;= 155)  // check if the timer count reaches 155
+        {
+         TCNT0 = 0;            // reset the timer
+        }
+    }
+}</code><div class="toolbar"><div class="toolbar-item"><a>Copy</a></div></div></pre>
+<p>I am continuing with the problem mentioned in the Prescaler section. 
+In this program, as I have explained above too, I am choosing 256 as a 
+prescaler and I have assigned the value to the CS00, CS01, and CS02 
+accordingly. I think the program is pretty much straightforward. Just go
+ through it, it is nothing new. Everything is already explained to you. 
+If there is any problem, you can ask for it in the comment section.</p>
+																	</div>
+														</div>
+														<div class="post-footer">
+								<div class="social-icons ed-social-share-icons">
+									<p class="share-title">Share:</p>
+									
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="http://www.facebook.com/sharer.php?u=http://avrgeeks.com/timer0-atmega16-avr/&amp;t=Timer0%20in%20Atmega16-AVR" class="social-share-link" title="Share &quot;Timer0 in Atmega16-AVR&quot; via Facebook" data-network-name="facebook" data-share-title="Timer0 in Atmega16-AVR" data-share-url="http://avrgeeks.com/timer0-atmega16-avr/">
+				<span class="et-extra-icon et-extra-icon-facebook et-extra-icon-background-hover"></span>
+			</a><a href="http://twitter.com/home?status=Timer0%20in%20Atmega16-AVR%20http://avrgeeks.com/timer0-atmega16-avr/" class="social-share-link" title="Share &quot;Timer0 in Atmega16-AVR&quot; via Twitter" data-network-name="twitter" data-share-title="Timer0 in Atmega16-AVR" data-share-url="http://avrgeeks.com/timer0-atmega16-avr/">
+				<span class="et-extra-icon et-extra-icon-twitter et-extra-icon-background-hover"></span>
+			</a><a href="https://plus.google.com/share?url=http://avrgeeks.com/timer0-atmega16-avr/&amp;t=Timer0%20in%20Atmega16-AVR" class="social-share-link" title="Share &quot;Timer0 in Atmega16-AVR&quot; via Google +" data-network-name="googleplus" data-share-title="Timer0 in Atmega16-AVR" data-share-url="http://avrgeeks.com/timer0-atmega16-avr/">
+				<span class="et-extra-icon et-extra-icon-googleplus et-extra-icon-background-hover"></span>
+			</a><a href="https://www.tumblr.com/share?v=3&amp;u=http://avrgeeks.com/timer0-atmega16-avr/&amp;t=Timer0%20in%20Atmega16-AVR" class="social-share-link" title="Share &quot;Timer0 in Atmega16-AVR&quot; via Tumblr" data-network-name="tumblr" data-share-title="Timer0 in Atmega16-AVR" data-share-url="http://avrgeeks.com/timer0-atmega16-avr/">
+				<span class="et-extra-icon et-extra-icon-tumblr et-extra-icon-background-hover"></span>
+			</a><a href="http://www.pinterest.com/pin/create/button/?url=http://avrgeeks.com/timer0-atmega16-avr/&amp;description=Timer0%20in%20Atmega16-AVR&amp;media=http://avrgeeks.com/wp-content/uploads/2017/10/Time-1-150x150.png" class="social-share-link" title="Share &quot;Timer0 in Atmega16-AVR&quot; via Pinterest" data-network-name="pinterest" data-share-title="Timer0 in Atmega16-AVR" data-share-url="http://avrgeeks.com/timer0-atmega16-avr/">
+				<span class="et-extra-icon et-extra-icon-pinterest et-extra-icon-background-hover"></span>
+			</a><a href="http://www.linkedin.com/shareArticle?mini=true&amp;url=http://avrgeeks.com/timer0-atmega16-avr/&amp;title=Timer0%20in%20Atmega16-AVR" class="social-share-link" title="Share &quot;Timer0 in Atmega16-AVR&quot; via LinkedIn" data-network-name="linkedin" data-share-title="Timer0 in Atmega16-AVR" data-share-url="http://avrgeeks.com/timer0-atmega16-avr/">
+				<span class="et-extra-icon et-extra-icon-linkedin et-extra-icon-background-hover"></span>
+			</a><a href="https://bufferapp.com/add?url=http://avrgeeks.com/timer0-atmega16-avr/&amp;title=Timer0%20in%20Atmega16-AVR" class="social-share-link" title="Share &quot;Timer0 in Atmega16-AVR&quot; via Buffer" data-network-name="buffer" data-share-title="Timer0 in Atmega16-AVR" data-share-url="http://avrgeeks.com/timer0-atmega16-avr/">
+				<span class="et-extra-icon et-extra-icon-buffer et-extra-icon-background-hover"></span>
+			</a><a href="http://www.stumbleupon.com/badge?url=http://avrgeeks.com/timer0-atmega16-avr/&amp;title=Timer0%20in%20Atmega16-AVR" class="social-share-link" title="Share &quot;Timer0 in Atmega16-AVR&quot; via Stumbleupon" data-network-name="stumbleupon" data-share-title="Timer0 in Atmega16-AVR" data-share-url="http://avrgeeks.com/timer0-atmega16-avr/">
+				<span class="et-extra-icon et-extra-icon-stumbleupon et-extra-icon-background-hover"></span>
+			</a><a href="#" class="social-share-link" title="Share &quot;Timer0 in Atmega16-AVR&quot; via Email" data-network-name="basic_email" data-share-title="Timer0 in Atmega16-AVR" data-share-url="http://avrgeeks.com/timer0-atmega16-avr/">
+				<span class="et-extra-icon et-extra-icon-basic_email et-extra-icon-background-hover"></span>
+			</a><a href="#" class="social-share-link" title="Share &quot;Timer0 in Atmega16-AVR&quot; via Print" data-network-name="basic_print" data-share-title="Timer0 in Atmega16-AVR" data-share-url="http://avrgeeks.com/timer0-atmega16-avr/">
+				<span class="et-extra-icon et-extra-icon-basic_print et-extra-icon-background-hover"></span>
+			</a>								</div>
+																<div class="rating-stars">
+									<p id="rate-title" class="rate-title">Rate:</p><div style="cursor: pointer;" id="rating-stars"><img class="rating-star rating-star-1 star-off" title="bad" alt="1" src="Timer0%20-%20The%208%20bit%20timer%20in%20Atmega-16_files/star-full.svg"><img class="rating-star rating-star-2 star-off" title="poor" alt="2" src="Timer0%20-%20The%208%20bit%20timer%20in%20Atmega-16_files/star-full.svg"><img class="rating-star rating-star-3 star-off" title="regular" alt="3" src="Timer0%20-%20The%208%20bit%20timer%20in%20Atmega-16_files/star-full.svg"><img class="rating-star rating-star-4 star-off" title="good" alt="4" src="Timer0%20-%20The%208%20bit%20timer%20in%20Atmega-16_files/star-full.svg"><img class="rating-star rating-star-5 star-off" title="gorgeous" alt="5" src="Timer0%20-%20The%208%20bit%20timer%20in%20Atmega-16_files/star-full.svg"><input name="score" type="hidden"></div><input id="post_id" value="516" type="hidden">								</div>
+																<style type="text/css" id="rating-stars">
+									.post-footer .rating-stars #rated-stars img.star-on,
+									.post-footer .rating-stars #rating-stars img.star-on {
+										background-color: #e8533b;
+									}
+								</style>
+							</div>
+
+																				</article>
+
+						<nav class="post-nav">
+							<div class="nav-links clearfix">
+								<div class="nav-link nav-link-prev">
+									<a href="http://avrgeeks.com/timers-atmega16-avr/" rel="prev"><span class="button">Previous</span><span class="title">Timers in Atmega16-AVR</span></a>								</div>
+								<div class="nav-link nav-link-next">
+									<a href="http://avrgeeks.com/timer1-atmega16-avr/" rel="next"><span class="button">Next</span><span class="title">Timer1 in Atmega16-AVR</span></a>								</div>
+							</div>
+						</nav>
+						
+												<div class="et_extra_other_module related-posts">
+							<div class="related-posts-header">
+								<h3>Related Posts</h3>
+							</div>
+							<div class="related-posts-content clearfix">
+																<div class="related-post">
+									<div class="featured-image"><a href="http://avrgeeks.com/timer1-atmega16-avr/" title="Timer1 in Atmega16-AVR" class="post-thumbnail">
+				<img src="Timer0%20-%20The%208%20bit%20timer%20in%20Atmega-16_files/Timer1inAtmega16-440x264.png" alt="Timer1 in Atmega16-AVR"><span class="et_pb_extra_overlay"></span>
+			</a></div>
+									<h4 class="title"><a href="http://avrgeeks.com/timer1-atmega16-avr/">Timer1 in Atmega16-AVR</a></h4>
+									<p class="date"><span class="updated">November 6, 2017</span></p>
+								</div>
+																<div class="related-post">
+									<div class="featured-image"><a href="http://avrgeeks.com/timers-atmega16-avr/" title="Timers in Atmega16-AVR" class="post-thumbnail">
+				<img src="Timer0%20-%20The%208%20bit%20timer%20in%20Atmega-16_files/digital-timer-footage-000943635_iconl-440x264.jpeg" alt="Timers in Atmega16-AVR"><span class="et_pb_extra_overlay"></span>
+			</a></div>
+									<h4 class="title"><a href="http://avrgeeks.com/timers-atmega16-avr/">Timers in Atmega16-AVR</a></h4>
+									<p class="date"><span class="updated">October 24, 2017</span></p>
+								</div>
+																							</div>
+						</div>
+										
+				<!-- You can start editing here. -->
+
+<section id="comment-wrap">
+			<div id="comments" class="nocomments">
+			 <!-- If comments are open, but there are no comments. -->
+
+					</div>
+					<div id="respond" class="comment-respond">
+		<h3 id="reply-title" class="comment-reply-title"><span>Leave a reply</span> <small><a rel="nofollow" id="cancel-comment-reply-link" href="http://avrgeeks.com/timer0-atmega16-avr/#respond" style="display:none;">Cancel reply</a></small></h3>			<form action="http://avrgeeks.com/wp-comments-post.php" method="post" id="commentform" class="comment-form">
+				<p class="comment-notes"><span id="email-notes">Your email address will not be published.</span> Required fields are marked <span class="required">*</span></p><p class="comment-form-comment"><label style="display: none;" for="comment">COMMENT</label><textarea id="comment" name="comment" cols="45" rows="8" aria-required="true">COMMENT</textarea></p><p class="comment-form-author"><label style="display: none;" for="author">Name <span class="required">*</span></label> <input id="author" name="author" value="Name *" size="30" maxlength="245" aria-required="true" required="required" type="text"></p>
+<p class="comment-form-email"><label style="display: none;" for="email">Email <span class="required">*</span></label> <input id="email" name="email" value="Email *" size="30" maxlength="100" aria-describedby="email-notes" aria-required="true" required="required" type="text"></p>
+<p class="comment-form-url"><label style="display: none;" for="url">Website</label> <input id="url" name="url" value="Website" size="30" maxlength="200" type="text"></p>
+<p class="form-submit"><input name="submit" id="submit" class="submit" value="Post Comment" type="submit"> <input name="comment_post_ID" value="516" id="comment_post_ID" type="hidden">
+<input name="comment_parent" id="comment_parent" value="0" type="hidden">
+</p>			</form>
+			</div><!-- #respond -->
+		</section>
+			</div><!-- /.et_pb_extra_column.et_pb_extra_column_main -->
+
+			<div class="et_pb_extra_column_sidebar">
+	<div id="search-2" class="et_pb_widget widget_search"><h4 class="widgettitle"> </h4><form role="search" method="get" class="search-form" action="http://avrgeeks.com/">
+				<label>
+					<span class="screen-reader-text">Search for:</span>
+					<input class="search-field" placeholder="Search …" name="s" type="search">
+				</label>
+				<input class="search-submit" value="Search" type="submit">
+			</form></div> <!-- end .et_pb_widget --><div id="et_ads-3" class="et_pb_widget widget_et_ads"><h4 class="widgettitle">Sponsored Products</h4>		<div class="widget_content clearfix">
+							<div class="etad">
+									<a href="https://www.banggood.com/UNO-R3-ATmega328P-Development-Board-For-Arduino-No-Cable-p-964163.html?p=V2151515192804201710" target="_blank">
+						<img src="Timer0%20-%20The%208%20bit%20timer%20in%20Atmega-16_files/Uno.jpg" alt="Advertisement">
+					</a>
+							</div>
+				</div>
+		</div> <!-- end .et_pb_widget --><div id="et_ads-7" class="et_pb_widget widget_et_ads">		<div class="widget_content clearfix">
+							<div class="etad">
+									<a href="https://www.banggood.com/collection-4945.html?utmid=2737&amp;utm_campaign=NewYear&amp;utm_content=east&amp;p=V2151515192804201710&amp;bid=41697&amp;utm_design=57" target="_blank"><img src="Timer0%20-%20The%208%20bit%20timer%20in%20Atmega-16_files/3c82c42719365742090eb207695a105514.jpg"></a>							</div>
+				</div>
+		</div> <!-- end .et_pb_widget --><div id="bloomwidget-3" class="et_pb_widget widget_bloomwidget"><h4 class="widgettitle">Subscribe</h4>
+				<div class="et_bloom_widget_content et_bloom_make_form_visible et_bloom_optin et_bloom_optin_1">
+					<style type="text/css">.et_bloom .et_bloom_optin_1 
+.et_bloom_form_content { background-color: #273038 !important; } 
+.et_bloom .et_bloom_optin_1 .zigzag_edge .et_bloom_form_content:before {
+ background: linear-gradient(45deg, transparent 33.33%, #273038 33.333%,
+ #273038 66.66%, transparent 66.66%), linear-gradient(-45deg, 
+transparent 33.33%, #273038 33.33%, #273038 66.66%, transparent 66.66%) 
+!important; background-size: 20px 40px !important; } .et_bloom 
+.et_bloom_optin_1 .zigzag_edge.et_bloom_form_right 
+.et_bloom_form_content:before, .et_bloom .et_bloom_optin_1 
+.zigzag_edge.et_bloom_form_left .et_bloom_form_content:before { 
+background-size: 40px 20px !important; }
+					@media only screen and ( max-width: 767px ) {.et_bloom 
+.et_bloom_optin_1 .zigzag_edge.et_bloom_form_right 
+.et_bloom_form_content:before, .et_bloom .et_bloom_optin_1 
+.zigzag_edge.et_bloom_form_left .et_bloom_form_content:before { 
+background: linear-gradient(45deg, transparent 33.33%, #273038 33.333%, 
+#273038 66.66%, transparent 66.66%), linear-gradient(-45deg, transparent
+ 33.33%, #273038 33.33%, #273038 66.66%, transparent 66.66%) !important;
+ background-size: 20px 40px !important; } }.et_bloom .et_bloom_optin_1 
+.et_bloom_form_container .et_bloom_form_header { background-color: 
+#313c46 !important; } .et_bloom .et_bloom_optin_1 .et_bloom_form_content
+ button { background-color: #e46644 !important; } .et_bloom 
+.et_bloom_optin_1.et_bloom_optin .et_bloom_border_inset { 
+-moz-box-shadow: inset 0 0 0 3px #e8a869; -webkit-box-shadow: inset 0 0 0
+ 3px #e8a869; box-shadow: inset 0 0 0 3px #e8a869; border-color: 
+#313c46; } .et_bloom .et_bloom_optin_1.et_bloom_optin 
+.et_bloom_border_inset.et_bloom_border_position_top { -moz-box-shadow: 
+inset 0 3px 0 0 #e8a869; -webkit-box-shadow: inset 0 3px 0 0 #e8a869; 
+box-shadow: inset 0 3px 0 0 #e8a869; border-color: #313c46; } .et_bloom 
+.et_bloom_optin_1 .et_bloom_form_content button { background-color: 
+#e46644 !important; } .et_bloom .et_bloom_optin_1 
+.et_bloom_form_container h2, .et_bloom .et_bloom_optin_1 
+.et_bloom_form_container h2 span, .et_bloom .et_bloom_optin_1 
+.et_bloom_form_container h2 strong { font-family: "Open Sans", 
+Helvetica, Arial, Lucida, sans-serif; }.et_bloom .et_bloom_optin_1 
+.et_bloom_form_container p, .et_bloom .et_bloom_optin_1 
+.et_bloom_form_container p span, .et_bloom .et_bloom_optin_1 
+.et_bloom_form_container p strong, .et_bloom .et_bloom_optin_1 
+.et_bloom_form_container form input, .et_bloom .et_bloom_optin_1 
+.et_bloom_form_container form button span { font-family: "Open Sans", 
+Helvetica, Arial, Lucida, sans-serif; } </style>
+					<div class="et_bloom_form_container with_edge zigzag_edge et_bloom_border_inset et_bloom_border_position_top et_bloom_rounded et_bloom_form_text_dark">
+						
+			<div class="et_bloom_form_container_wrapper clearfix">
+				<div class="et_bloom_header_outer">
+					<div class="et_bloom_form_header et_bloom_header_text_light">
+						<img src="Timer0%20-%20The%208%20bit%20timer%20in%20Atmega-16_files/premade-image-13.png" alt="Subscribe To Our Newsletter" class=" et_bloom_image_slideup et_bloom_image">
+						<div class="et_bloom_form_text">
+						<h2>Subscribe To Our Newsletter</h2><p>Join our mailing list to receive the latest news and updates from our team.</p>
+					</div>
+						
+					</div>
+				</div>
+				<div class="et_bloom_form_content et_bloom_2_fields et_bloom_bottom_stacked">
+					
+					
+					<form method="post" class="clearfix">
+						<p class="et_bloom_popup_input et_bloom_subscribe_name">
+								<input placeholder="Name" maxlength="50">
+							</p>
+						<p class="et_bloom_popup_input et_bloom_subscribe_email">
+							<input placeholder="Email">
+						</p>
+
+						<button data-optin_id="optin_1" data-service="mailchimp" data-list_id="484090496b" data-page_id="516" data-account="+91 9911234372" data-disable_dbl_optin="" class="et_bloom_submit_subscription">
+							<span class="et_bloom_subscribe_loader"></span>
+							<span class="et_bloom_button_text et_bloom_button_text_color_light">SUBSCRIBE!</span>
+						</button>
+					</form>
+					<div class="et_bloom_success_container">
+						<span class="et_bloom_success_checkmark"></span>
+					</div>
+					<h2 class="et_bloom_success_message">You have Successfully Subscribed!</h2>
+					
+				</div>
+			</div>
+			<span class="et_bloom_close_button"></span>
+					</div>
+				</div></div> <!-- end .et_pb_widget -->		<div id="recent-posts-2" class="et_pb_widget widget_recent_entries">		<h4 class="widgettitle">Recent Posts</h4>		<ul>
+											<li>
+					<a href="http://avrgeeks.com/hello-world/">Hello world!</a>
+									</li>
+											<li>
+					<a href="http://avrgeeks.com/evm-using-avr/">Electronic Voting Machine using Atmega16</a>
+									</li>
+											<li>
+					<a href="http://avrgeeks.com/interrupts-in-atmega16/">Interrupts in Atmega16-AVR</a>
+									</li>
+											<li>
+					<a href="http://avrgeeks.com/polling-vs-interrupt/">Polling vs Interrupt</a>
+									</li>
+											<li>
+					<a href="http://avrgeeks.com/timer1-atmega16-avr/">Timer1 in Atmega16-AVR</a>
+									</li>
+					</ul>
+		</div> <!-- end .et_pb_widget --></div>
+
+		</div> <!-- #content-area -->
+	</div> <!-- .container -->
+	</div> <!-- #main-content -->
+
+	
+	<footer id="footer" class="footer_columns_3">
+				<div id="footer-bottom">
+			<div class="container">
+
+				<!-- Footer Info -->
+				<p id="footer-info">Designed by <a href="http://www.elegantthemes.com/" title="Premium WordPress Themes">Elegant Themes</a> | Powered by <a href="http://www.wordpress.org/">WordPress</a></p>
+
+				<!-- Footer Navigation -->
+								<div id="footer-nav">
+					<ul id="footer-menu" class="bottom-nav"><li id="menu-item-466" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-466"><a href="http://www.avrgeeks.com/">Home</a></li>
+<li id="menu-item-467" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-467"><a href="http://avrgeeks.com/authors/">Authors</a></li>
+<li id="menu-item-468" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-468"><a href="http://avrgeeks.com/sitemap/">Sitemap</a></li>
+<li id="menu-item-469" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-469"><a href="http://avrgeeks.com/contact-us/">Contact Us</a></li>
+</ul>				</div> <!-- /#et-footer-nav -->
+				
+			</div>
+		</div>
+	</footer>
+	</div> <!-- #page-container -->
+
+	
+		<script type="text/javascript">
+		var et_animation_data = [];
+	</script>
+	<link rel="stylesheet" id="et-gf-open-sans-css" href="Timer0%20-%20The%208%20bit%20timer%20in%20Atmega-16_files/css_002.css" type="text/css" media="all">
+
+<script type="text/javascript">
+/* <![CDATA[ */
+var zerospam = {"key":"KbFwTUlA@ffnMjfouFp^zw4jxCEcN3MuqJRtkAsVToYGe$sTZz1zRYSAq2Zs@maN"};
+/* ]]> */
+</script>
+
+
+
+<script type="text/javascript" src="Timer0%20-%20The%208%20bit%20timer%20in%20Atmega-16_files/31049.js"></script>
+
+<script type="text/javascript">
+/* <![CDATA[ */
+var EXTRA = 
+{"images_uri":"http:\/\/avrgeeks.com\/wp-content\/themes\/Extra\/images\/","ajaxurl":"http:\/\/avrgeeks.com\/wp-admin\/admin-ajax.php","your_rating":"Your
+ Rating:","item_in_cart_count":"%d Item in 
+Cart","items_in_cart_count":"%d Items in Cart","item_count":"%d 
+Item","items_count":"%d 
+Items","rating_nonce":"2b09469476","timeline_nonce":"0a2bce06c2","blog_feed_nonce":"855fcd0bb7","error":"There
+ was a problem, please try again.","contact_error_name_required":"Name 
+field cannot be empty.","contact_error_email_required":"Email field 
+cannot be empty.","contact_error_email_invalid":"Please enter a valid 
+email 
+address.","is_ab_testing_active":"","is_cache_plugin_active":"no"};
+var et_shortcodes_strings = {"previous":"Previous","next":"Next"};
+var et_pb_custom = 
+{"ajaxurl":"http:\/\/avrgeeks.com\/wp-admin\/admin-ajax.php","images_uri":"http:\/\/avrgeeks.com\/wp-content\/themes\/Extra\/images","builder_images_uri":"http:\/\/avrgeeks.com\/wp-content\/themes\/Extra\/includes\/builder\/images","et_frontend_nonce":"10d0d2e837","subscription_failed":"Please,
+ check the fields below to make sure you entered the correct 
+information.","et_ab_log_nonce":"9205d7043f","fill_message":"Please, 
+fill in the following fields:","contact_error_message":"Please, fix the 
+following errors:","invalid":"Invalid 
+email","captcha":"Captcha","prev":"Prev","previous":"Previous","next":"Next","wrong_captcha":"You
+ entered the wrong number in 
+captcha.","is_builder_plugin_used":"","ignore_waypoints":"no","is_divi_theme_used":"","widget_search_selector":".widget_search","is_ab_testing_active":"","page_id":"516","unique_test_id":"","ab_bounce_rate":"5","is_cache_plugin_active":"no","is_shortcode_tracking":""};
+var
+ et_pb_box_shadow_elements = [];
+/* ]]> */
+</script>
+
+
+
+
+
+<script type="text/javascript" src="Timer0%20-%20The%208%20bit%20timer%20in%20Atmega-16_files/0804e.js"></script>
+
+<script type="text/javascript">
+/* <![CDATA[ */
+var bloomSettings = 
+{"ajaxurl":"http:\/\/avrgeeks.com\/wp-admin\/admin-ajax.php","pageurl":"http:\/\/avrgeeks.com\/timer0-atmega16-avr\/","stats_nonce":"467162ae1f","subscribe_nonce":"b0129f32de","is_user_logged_in":"not_logged"};
+/*
+ ]]> */
+</script>
+
+<script type="text/javascript" src="Timer0%20-%20The%208%20bit%20timer%20in%20Atmega-16_files/1c99f.js"></script>
+
+
+
+
+</body></html>
+<!--
+Performance optimized by W3 Total Cache. Learn more: https://www.w3-edge.com/products/
+
+Object Caching 1815/12 objects using disk
+Page Caching using disk: enhanced 
+Minified using disk
+Database Caching using disk
+
+Served from: avrgeeks.com @ 2018-01-16 22:58:47 by W3 Total Cache
+-->
