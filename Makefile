@@ -26,6 +26,7 @@ DOXYGEN_DIR = $(shell grep OUTPUT_DIRECTORY Doxyfile | sed -e 's/^.*=\ *//g')
 
 OBJS = ${BUILD_DIR}/${fname}.o \
        ${BUILD_DIR}/gpio.o \
+       ${BUILD_DIR}/7seg.o \
        ${BUILD_DIR}/usart.o \
        ${BUILD_DIR}/pwm.o
 #       ${BUILD_DIR}/usart.o

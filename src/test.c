@@ -24,12 +24,13 @@
 
 #include <util/delay.h>
 #include "gpio.h"
+#include "7seg.h"
 #include "pwm.h"
 #include "usart.h"
 
 #define DELAY_MAX 127
 
-#define PINCOUNT 16
+#define PINCOUNT 11
 #define RISE 1
 #define FALL 0
 
@@ -52,24 +53,35 @@ void test_output(void)
 {
     uint8_t x;
 
-    DDRB |= (1 << PB3 | 1 << PB2 | 1 << PB1 | 1 << PB0);
+    DDRB |= (1 << PB2 | 1 << PB1 | 1 << PB0);
     DDRD |= (1 << PD7 | 1 << PD6 | 1 << PD5 | 1 << PD4 | 1 << PD3 | 1 << PD2);
 
     for(x = 1; x < 3; x++)
     {
         /* turn LEDs off */
-        PORTB &= ~(1 << PB3 | 1 << PB2 | 1 << PB1 | 1 << PB0);
+        PORTB &= ~(1 << PB2 | 1 << PB1 | 1 << PB0);
         PORTD &= ~(1 << PD7 | 1 << PD6 | 1 << PD5 | 1 << PD4 | 1 << PD3 | 1 << PD2);
         _delay_ms(111);
         /* turn LEDs on */
-        PORTB |= (1 << PB3 | 1 << PB2 | 1 << PB1 | 1 << PB0);
+        PORTB |= (1 << PB2 | 1 << PB1 | 1 << PB0);
         PORTD |= (1 << PD7 | 1 << PD6 | 1 << PD5 | 1 << PD4 | 1 << PD3 | 1 << PD2);
         _delay_ms(111);
     }
 
     /* turn LEDs off */
-    PORTB &= ~(1 << PB3 | 1 << PB2 | 1 << PB1 | 1 << PB0);
+    PORTB &= ~(1 << PB2 | 1 << PB1 | 1 << PB0);
     PORTD &= ~(1 << PD7 | 1 << PD6 | 1 << PD5 | 1 << PD4 | 1 << PD3 | 1 << PD2);
+}
+
+void test_7_seg(void)
+{
+    for(int x = 0; x < PINCOUNT; x++)
+    {
+        set_7seg_pin(outpins + x);
+        my_delay(300);
+        reset_7seg_pin(outpins + x);
+        my_delay(300);
+    }
 }
 
 
@@ -96,7 +108,23 @@ int main(void)
 {
     test_output();
 
-    init_output(&outpins[0], PD7, &PORTD, &DDRD);
+    init_output(&outpins[0], PB5, &PORTB, &DDRB); // Yg
+    init_output(&outpins[1], PB4, &PORTB, &DDRB); // Yr
+    /* PB3 is reserved for PWM out */
+    init_output(&outpins[2], PB2, &PORTB, &DDRB); // Ag
+    init_output(&outpins[3], PB1, &PORTB, &DDRB); // Ar
+    init_output(&outpins[4], PB0, &PORTB, &DDRB); // notYg
+    init_output(&outpins[5], PD7, &PORTD, &DDRD); // Fg
+    init_output(&outpins[6], PD6, &PORTD, &DDRD); // Ir
+    init_output(&outpins[7], PD5, &PORTD, &DDRD); // Ig
+    init_output(&outpins[8], PD4, &PORTD, &DDRD); // Cr
+    init_output(&outpins[9], PD3, &PORTD, &DDRD); // Cg
+    init_output(&outpins[10], PD2, &PORTD, &DDRD); // Fr
+
+    test_7_seg();
+    my_delay(500);
+    test_7_seg();
+    my_delay(500);
 
     usart_init(19200);
     sei();
