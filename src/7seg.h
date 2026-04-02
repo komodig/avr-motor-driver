@@ -18,7 +18,15 @@
 #ifndef _7SEG_H_
 #define _7SEG_H_
 
+#define ADDRCOUNT 4
+#define PINCOUNT 7
+
+
+extern pinconf_t outpins[PINCOUNT];
+extern pinconf_t addrpins[ADDRCOUNT];
+
 extern void set_7seg_pin(pinconf_t *gpio);
 extern void reset_7seg_pin(pinconf_t *gpio);
+extern void reset_7seg_pins(pinconf_t *gpio);
 
 #endif // _7SEG_H_
