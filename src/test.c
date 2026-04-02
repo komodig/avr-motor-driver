@@ -38,6 +38,8 @@ pinconf_t outpins[PINCOUNT];
 pinconf_t addrpins[ADDRCOUNT];
 
 static uint8_t level = 0, direction = RISE;
+pinconf_t sensor_io;
+uint16_t turns = 0;
 
 
 void my_delay(uint16_t ms)
@@ -115,9 +117,13 @@ void test_pwm(void)
         set_pwm_percent(x);
         snprintf(outbuf, 32, "pwm %d%%\r\n", x);
         usart_write_str(outbuf);
+        snprintf(outbuf, 32, "turns: %d state:%d\r\n", turns, sensor_io.state);
+        usart_write_str(outbuf);
 
         for(t = 0; t < delay; t++)
+        {
             display_7seg_4digit_number(x);
+        }
     }
     for(x = max; x > min; x--)
     {
@@ -126,16 +132,47 @@ void test_pwm(void)
         usart_write_str(outbuf);
 
         for(t = 0; t < delay; t++)
+        {
             display_7seg_4digit_number(x);
+        }
     }
     disable_pwm();
 }
 
 
+ISR (INT0_vect)
+{
+    uint8_t new_state = read_pin(&sensor_io);
+    turns++;
+}
+
+
+void INT0_init(void)
+{
+    // Configure INT0 to trigger on falling edge
+    EICRA |= (1 << ISC01);
+    EICRA &= ~(1 << ISC00);
+
+    // enable INT0
+    EIMSK |= (1 << INT0);
+}
+
+
 int main(void)
 {
+    // stackpointer init
+    SP = RAMEND;
+    // sensor pin init
+    init_input(&sensor_io, PD2, &PORTD, &DDRD);
+
+    // configure interrupt for sensor pin
+    INT0_init();
+
     usart_init(19200);
+
+    // enable global interrupts
     sei();
+
     usart_write_str("welcome to avr-uno!\r\n");
 
     usart_write_str("\r\ntesting gpio\r\n");
