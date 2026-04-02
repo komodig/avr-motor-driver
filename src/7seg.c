@@ -189,10 +189,7 @@ uint8_t display_7seg_4digit_number(uint16_t number)
         reset_all_7seg_pins();
 
         // switching-off digit-display for some time to reduce power consumption
-        for(int t = 0; t < 6; t++)
-        {
-            _delay_ms(1);
-        }
+        _delay_ms(6);
     }
 }
 
